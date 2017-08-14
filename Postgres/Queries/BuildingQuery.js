@@ -57,10 +57,10 @@ exports.get_buildings_info = (req, res, next) => {
 
 exports.get_specific_building = (req, res, next) => {
   const info = req.body
-  let get_building = `SELECT a.building_id, a.corporation_id, a.building_name,
+  let get_building = `SELECT a.building_id, a.corporation_id, d.corporation_id, a.building_name,
                              a.building_desc, a.building_type, b.building_address,
                              b.gps_x, b.gps_y, c.thumbnail, c.cover_photo
-                      FROM building a
+                      FROM (SELECT * FROM building WHERE building_id = '${info.building_id}') a
                       INNER JOIN
                         (SELECT address_id, CONCAT(street_code, ' ', street_name, ', ', city, ', ', province, ', ', country) AS building_address, gps_x, gps_y
                         FROM address) b
@@ -68,7 +68,9 @@ exports.get_specific_building = (req, res, next) => {
                       INNER JOIN
                         (SELECT building_id, thumbnail, cover_photo FROM media WHERE building_id IS NOT NULL) c
                         ON a.building_id = c.building_id
-                      WHERE building_id = '${info.building_id}'
+                      INNER JOIN
+                        corporation d
+                        ON a.corporation_id = d.corporation_id
                       `
   const return_rows = (rows) => {
     res.json(rows)
@@ -115,5 +117,29 @@ exports.get_buildings_suites_info = (req, res, next) => {
     })
     .catch((error) => {
         res.status(500).send('Failed to get buildings info')
+    })
+}
+
+exports.get_specific_landlord = (req, res, next) => {
+  const info = req.body
+  let get_landlord = `SELECT *
+                      FROM corporation
+                      WHERE corporation_id='${info.corporation_id}'
+                      `
+  const return_rows = (rows) => {
+    res.json(rows)
+  }
+  query(get_landlord)
+    .then((data) => {
+      return stringify_rows(data)
+    })
+    .then((data) => {
+      return log_through(data)
+    })
+    .then((data) => {
+      return return_rows(data)
+    })
+    .catch((error) => {
+        res.status(500).send('Failed to get landlord info')
     })
 }

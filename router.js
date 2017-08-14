@@ -16,5 +16,5 @@ module.exports = function(app){
 	// search routes
 	app.post('/searchInArea', json_encoding, BuildingQuery.get_buildings_info)
 	app.post('/get_specific_building', json_encoding, BuildingQuery.get_specific_building)
-
+	app.post('/get_specific_landlord', json_encoding, BuildingQuery.get_specific_landlord)
 }
