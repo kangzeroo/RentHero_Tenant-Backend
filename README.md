@@ -1,4 +1,4 @@
-# The Ultimate Node Jumpstart
+# Rentburrow Tenant Backend
 Includes the following technologies:
 - NodeJS v6.3.1 LTS
 - ExpressJS with HTTPS
