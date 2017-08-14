@@ -23,10 +23,11 @@ exports.get_buildings_info = (req, res, next) => {
   const info = req.body
   let get_building = `SELECT a.building_id, a.corporation_id, a.building_name,
                              a.building_desc, a.building_type, b.building_address,
+                             b.gps_x, b.gps_y,
                              c.thumbnail, c.cover_photo, d.min_price, d.max_price
                       FROM building a
                       INNER JOIN
-                        (SELECT address_id, CONCAT(street_code, ' ', street_name, ', ', city, ', ', province, ', ', country) AS building_address
+                        (SELECT address_id, CONCAT(street_code, ' ', street_name, ', ', city, ', ', province, ', ', country) AS building_address, gps_x, gps_y
                         FROM address) b
                         ON a.address_id = b.address_id
                       INNER JOIN
@@ -52,4 +53,10 @@ exports.get_buildings_info = (req, res, next) => {
     .catch((error) => {
         res.status(500).send('Failed to get buildings info')
     })
+}
+
+
+exports.get_specific_building = (req, res, next) => {
+  // more in depth detail on a building
+  // suite info and amenities and prices for rooms
 }
