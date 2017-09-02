@@ -21,6 +21,7 @@ const log_through = data => {
 
 exports.get_all_active_buildings = (req, res, next) => {
   const info = req.body
+  
   let get_building = `SELECT * FROM building
                       `
   const return_rows = (rows) => {
@@ -38,5 +39,29 @@ exports.get_all_active_buildings = (req, res, next) => {
     })
     .catch((error) => {
         res.status(500).send('Failed to get buildings info')
+    })
+}
+
+exports.get_specific_landlord = (req, res, next) => {
+  const info = req.body
+  let get_landlord = `SELECT *
+                      FROM corporation
+                      WHERE corporation_id='${info.corporation_id}'
+                      `
+  const return_rows = (rows) => {
+    res.json(rows)
+  }
+  query(get_landlord)
+    .then((data) => {
+      return stringify_rows(data)
+    })
+    .then((data) => {
+      return log_through(data)
+    })
+    .then((data) => {
+      return return_rows(data)
+    })
+    .catch((error) => {
+        res.status(500).send('Failed to get landlord info')
     })
 }
