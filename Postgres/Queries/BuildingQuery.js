@@ -24,7 +24,7 @@ exports.get_all_active_buildings = (req, res, next) => {
 
   let get_building = `SELECT a.building_id, a.corporation_id, a.building_alias,
                              a.building_desc, a.building_type, b.building_address,
-                             c.thumbnail, c.cover_photo
+                             c.thumbnail, c.cover_photo, d.imgs
                       FROM building a
                       INNER JOIN
                         (SELECT address_id, CONCAT(street_code, ' ', street_name, ', ', city) AS building_address
@@ -35,6 +35,14 @@ exports.get_all_active_buildings = (req, res, next) => {
                           WHERE suite_id IS NULL
                             AND room_id IS NULL) c
                         ON a.building_id = c.building_id
+                      INNER JOIN
+                        (SELECT building_id, array_agg(image_url ORDER BY position) AS imgs
+                          FROM images
+                          WHERE suite_id IS NULL
+                            AND room_id IS NULL
+                          GROUP BY building_id
+                        ) d
+                      ON a.building_id = d.building_id
                       `
 
                       /*                      INNER JOIN
@@ -84,7 +92,7 @@ exports.get_specific_landlord = (req, res, next) => {
 
 exports.get_specific_building = (req, res, next) => {
   const info = req.body
-  let get_property =  `SELECT a.building_id, a.corporation_id, a.building_alias,
+  let get_building =  `SELECT a.building_id, a.corporation_id, a.building_alias,
                              a.building_desc, a.building_type, b.building_address,
                              b.gps_x, b.gps_y,
                              c.thumbnail, c.cover_photo
@@ -104,7 +112,7 @@ exports.get_specific_building = (req, res, next) => {
   const return_rows = (rows) => {
     res.json(rows)
   }
-  query(get_property)
+  query(get_building)
     .then((data) => {
       return stringify_rows(data)
     })
@@ -121,13 +129,16 @@ exports.get_specific_building = (req, res, next) => {
 
 exports.get_images_for_specific_building = (req, res, next) => {
   const info = req.body
-  let get_property =  `SELECT image_id, building_id, image_url, position, caption FROM images
+  let get_images =  `SELECT image_url, caption, position FROM images
                         WHERE building_id = '${info.building_id}'
+                          AND suite_id IS NULL
+                          AND room_id IS NULL
+                        ORDER BY position
                       `
   const return_rows = (rows) => {
     res.json(rows)
   }
-  query(get_property)
+  query(get_images)
     .then((data) => {
       return stringify_rows(data)
     })
@@ -144,7 +155,7 @@ exports.get_images_for_specific_building = (req, res, next) => {
 
 exports.get_amenities_for_specific_building = (req, res, next) => {
   const info = req.body
-  let get_property =  `SELECT building_id, amenity_alias, amenity_type, amenity_class
+  let get_amenities =  `SELECT building_id, amenity_alias, amenity_type, amenity_class
                          FROM amenities
                          WHERE building_id = '${info.building_id}'
                            AND suite_id IS NULL
@@ -153,7 +164,7 @@ exports.get_amenities_for_specific_building = (req, res, next) => {
   const return_rows = (rows) => {
     res.json(rows)
   }
-  query(get_property)
+  query(get_amenities)
     .then((data) => {
       return stringify_rows(data)
     })
