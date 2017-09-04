@@ -4,4 +4,6 @@ ADD package.json package.json
 RUN npm install
 ADD . .
 
-CMD ["npm","run", "dev"]
+EXPOSE 3002
+
+CMD ["npm","run", "prod"]

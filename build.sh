@@ -1,1 +1,1 @@
-docker build -t nodeultimate .
+docker build -t tenant_backend .
