@@ -24,10 +24,11 @@ exports.get_all_active_buildings = (req, res, next) => {
 
   let get_building = `SELECT a.building_id, a.corporation_id, a.building_alias,
                              a.building_desc, a.building_type, b.building_address,
+                             b.gps_x, b.gps_y,
                              c.thumbnail, c.cover_photo, d.imgs
                       FROM building a
                       INNER JOIN
-                        (SELECT address_id, CONCAT(street_code, ' ', street_name, ', ', city) AS building_address
+                        (SELECT address_id, gps_x, gps_y, CONCAT(street_code, ' ', street_name, ', ', city) AS building_address
                         FROM address) b
                         ON a.address_id = b.address_id
                       INNER JOIN
