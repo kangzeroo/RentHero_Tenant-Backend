@@ -25,7 +25,7 @@ exports.get_all_active_buildings = (req, res, next) => {
   let get_building = `SELECT a.building_id, a.corporation_id, a.building_alias,
                              a.building_desc, a.building_type, b.building_address,
                              b.gps_x, b.gps_y,
-                             c.thumbnail, c.cover_photo, d.imgs
+                             c.thumbnail, c.cover_photo, d.imgs, e.min_price
                       FROM building a
                       INNER JOIN
                         (SELECT address_id, gps_x, gps_y, CONCAT(street_code, ' ', street_name, ', ', city) AS building_address
@@ -44,6 +44,10 @@ exports.get_all_active_buildings = (req, res, next) => {
                           GROUP BY building_id
                         ) d
                       ON a.building_id = d.building_id
+                      INNER JOIN
+                        (SELECT building_id, MIN(price) AS min_price FROM room
+                         GROUP BY building_id) e
+                      ON a.building_id = e.building_id
                       `
 
                       /*                      INNER JOIN
