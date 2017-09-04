@@ -32,11 +32,14 @@ exports.get_all_active_buildings = (req, res, next) => {
                         ON a.address_id = b.address_id
                       INNER JOIN
                         (SELECT building_id, thumbnail, cover_photo FROM media
-                          WHERE building_id IS NOT NULL
-                            AND suite_id IS NULL
+                          WHERE suite_id IS NULL
                             AND room_id IS NULL) c
                         ON a.building_id = c.building_id
                       `
+
+                      /*                      INNER JOIN
+                                              (SELECT building_id, MIN(price) AS min_price FROM room GROUP BY building_id) d
+                                              ON c.building_id = d.building_id*/
   const return_rows = (rows) => {
     res.json(rows)
   }
@@ -118,6 +121,32 @@ exports.get_images_for_specific_building = (req, res, next) => {
   const info = req.body
   let get_property =  `SELECT image_id, building_id, image_url, position, caption FROM images
                         WHERE building_id = '${info.building_id}'
+                      `
+  const return_rows = (rows) => {
+    res.json(rows)
+  }
+  query(get_property)
+    .then((data) => {
+      return stringify_rows(data)
+    })
+    .then((data) => {
+      return log_through(data)
+    })
+    .then((data) => {
+      return return_rows(data)
+    })
+    .catch((error) => {
+        res.status(500).send('Failed to get property info')
+    })
+}
+
+exports.get_amenities_for_specific_building = (req, res, next) => {
+  const info = req.body
+  let get_property =  `SELECT building_id, amenity_alias, amenity_type, amenity_class
+                         FROM amenities
+                         WHERE building_id = '${info.building_id}'
+                           AND suite_id IS NULL
+                           AND room_id IS NULL
                       `
   const return_rows = (rows) => {
     res.json(rows)
