@@ -22,7 +22,20 @@ const log_through = data => {
 exports.get_all_active_buildings = (req, res, next) => {
   const info = req.body
 
-  let get_building = `SELECT * FROM building
+  let get_building = `SELECT a.building_id, a.corporation_id, a.building_alias,
+                             a.building_desc, a.building_type, b.building_address,
+                             c.thumbnail, c.cover_photo
+                      FROM building a
+                      INNER JOIN
+                        (SELECT address_id, CONCAT(street_code, ' ', street_name, ', ', city) AS building_address
+                        FROM address) b
+                        ON a.address_id = b.address_id
+                      INNER JOIN
+                        (SELECT building_id, thumbnail, cover_photo FROM media
+                          WHERE building_id IS NOT NULL
+                            AND suite_id IS NULL
+                            AND room_id IS NULL) c
+                        ON a.building_id = c.building_id
                       `
   const return_rows = (rows) => {
     res.json(rows)
@@ -68,9 +81,43 @@ exports.get_specific_landlord = (req, res, next) => {
 
 exports.get_specific_building = (req, res, next) => {
   const info = req.body
-  let get_property =  `SELECT *
-                       FROM building
-                       WHERE building_id='${info.building_id}'
+  let get_property =  `SELECT a.building_id, a.corporation_id, a.building_alias,
+                             a.building_desc, a.building_type, b.building_address,
+                             c.thumbnail, c.cover_photo
+                      FROM (SELECT * FROM building WHERE building_id = '${info.building_id}') a
+                      INNER JOIN
+                        (SELECT address_id, CONCAT(street_code, ' ', street_name, ', ', city) AS building_address
+                        FROM address) b
+                        ON a.address_id = b.address_id
+                      INNER JOIN
+                        (SELECT building_id, thumbnail, cover_photo FROM media
+                          WHERE building_id IS NOT NULL
+                            AND suite_id IS NULL
+                            AND room_id IS NULL) c
+                        ON a.building_id = c.building_id
+                      `
+  const return_rows = (rows) => {
+    res.json(rows)
+  }
+  query(get_property)
+    .then((data) => {
+      return stringify_rows(data)
+    })
+    .then((data) => {
+      return log_through(data)
+    })
+    .then((data) => {
+      return return_rows(data)
+    })
+    .catch((error) => {
+        res.status(500).send('Failed to get property info')
+    })
+}
+
+exports.get_images_for_specific_building = (req, res, next) => {
+  const info = req.body
+  let get_property =  `SELECT image_id, building_id, image_url, position, caption FROM images
+                        WHERE building_id = '${info.building_id}'
                       `
   const return_rows = (rows) => {
     res.json(rows)
