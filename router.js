@@ -14,8 +14,6 @@ module.exports = function(app){
 	app.get('/test', json_encoding, Test.test)
 
 	// search routes
-	// app.post('/searchInArea', json_encoding, BuildingQuery.get_buildings_info)
-
 	app.post('/get_all_active_buildings', json_encoding, BuildingQuery.get_all_active_buildings)
 	app.post('/get_specific_building', json_encoding, BuildingQuery.get_specific_building)
 	app.post('/get_images_for_specific_building', json_encoding, BuildingQuery.get_images_for_specific_building)
