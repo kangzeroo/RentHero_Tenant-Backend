@@ -44,3 +44,28 @@ exports.insert_facebook_sublets = (req, res, next) => {
     res.status(500).send('Failed to save building info')
   })
 }
+
+exports.check_latest_sublet = (req, res, next) => {
+  const info = req.body
+  const values = [info.fb_group_id]
+
+  let get_last_row = `SELECT * FROM facebook_sublets WHERE fb_group_id = $1 ORDER BY created_at DESC LIMIT 1
+                      `
+
+  const return_rows = (rows) => {
+    res.json(rows)
+  }
+  query(get_last_row, values)
+    .then((data) => {
+      return stringify_rows(data)
+    })
+    .then((data) => {
+      return log_through(data)
+    })
+    .then((data) => {
+      return return_rows(data)
+    })
+    .catch((error) => {
+        res.status(500).send('Failed to get buildings info')
+    })
+}
