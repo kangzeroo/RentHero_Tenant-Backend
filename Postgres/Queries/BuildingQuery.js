@@ -199,11 +199,19 @@ exports.get_images_for_specific_building = (req, res, next) => {
 exports.get_amenities_for_specific_building = (req, res, next) => {
   const info = req.body
   const values = [info.building_id]
-  let get_amenities =  `SELECT building_id, amenity_alias, amenity_type, amenity_class
-                         FROM amenities
-                         WHERE building_id = $1
-                           AND suite_id IS NULL
-                           AND room_id IS NULL
+  let get_amenities =  `SELECT a.building_id, a.amenity_alias, a.amenity_type, a.amenity_class,
+                               array_agg(c.image_url) AS image_urls
+                         FROM (SELECT * FROM amenities
+                                WHERE building_id = $1
+                                  AND suite_id IS NULL
+                                  AND room_id IS NULL) a
+                         LEFT OUTER JOIN
+                          amenities_images b
+                         ON a.amenity_id = b.amenity_id
+                         LEFT OUTER JOIN
+                          images c
+                         ON b.image_id = c.image_id
+                         GROUP BY a.building_id, a.amenity_alias, a.amenity_type, a.amenity_class
                       `
   const return_rows = (rows) => {
     res.json(rows)
