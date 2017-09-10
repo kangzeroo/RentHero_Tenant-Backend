@@ -29,7 +29,6 @@ exports.insert_facebook_sublets = (req, res, next) => {
                                                         price, address, description, gps_x, gps_y, ensuite_bath, utils_included,
                                                         female_only, rooms_left, location_id, fb_group_id, posted_date, phone, images)
                                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19)
-                               )
                             `
 
   query(insert_sublets, values)
