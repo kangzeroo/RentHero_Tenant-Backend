@@ -2,7 +2,7 @@ const nlp = require('./subletExtractor/nlp')
 const fbExtractor = require('./fbExtractor')
 const googleMapsExtractor = require('./googleMapsExtractor')
 const AsyncJS = require('async')
-const insert_facebook_sublets = require('../../Postgres/Queries/FBQueries')
+const insert_facebook_sublets = require('../../Postgres/Queries/FBQueries').insert_facebook_sublets
 
 exports.parseAndSaveSublets = function(newSublets){
 	AsyncJS.eachSeries(newSublets, parseSubletForInfo, ()=>{
@@ -45,6 +45,13 @@ function saveSublet(sublet){
 	const p = new Promise((resolve, rej)=>{
 		console.log(sublet)
 		insert_facebook_sublets(sublet)
+			.then((result) => {
+				console.log(result)
+			})
+	    .catch((error) => {
+	      console.log(error)
+	      res.status(500).send('Failed to save building info')
+	    })
 		// check if the post already exists
 		// Sublet.find({$or: [ { 'postid': sublet.postid }, { $and: [{userid: sublet.userid},{coords: sublet.coords}, {active: true}] } ]}, function(err, response){
 		// 	if(err){return next(err)};
