@@ -4,6 +4,7 @@ const Test = require('./routes/test_routes')
 const BuildingQuery = require('./Postgres/Queries/BuildingQuery')
 const SubletQuery = require('./SubletScrapper/SubletQuery')
 const FBQueries = require('./Postgres/Queries/FBQueries')
+const Authentication = require('./SubletScrapper/FacebookToken')
 
 // bodyParser attempts to parse any request into JSON format
 const json_encoding = bodyParser.json({
@@ -28,6 +29,7 @@ module.exports = function(app){
 	// sublet routes
 	app.post('/check_latest_sublet', json_encoding, SubletQuery.check_latest_sublet)
 	app.post('/new_sublets', json_encoding, SubletQuery.new_sublets)
+	app.post('/longlivetoken', json_encoding, Authentication.longlivetoken);
 
 	// specific building routes
 	app.post('/get_available_suites', json_encoding, BuildingQuery.get_available_suites)
