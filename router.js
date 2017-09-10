@@ -27,4 +27,5 @@ module.exports = function(app){
 	// sublet routes
 	app.post('/check_latest_sublet', json_encoding, SubletQuery.check_latest_sublet)
 	app.post('/new_sublets', json_encoding, SubletQuery.new_sublets)
+	app.post('/get_available_suites', json_encoding, BuildingQuery.get_available_suites)
 }
