@@ -29,7 +29,7 @@ module.exports.parseGPS = function(sublet){
 			}else{
 				console.log(sublet.address)
 				console.log(result)
-			  	rej("No geocoding data!");
+		  	rej("No geocoding data!");
 			}
 		  }
 		})

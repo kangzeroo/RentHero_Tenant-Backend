@@ -18,7 +18,7 @@ function parseSubletForInfo(sublet, callback){
 			.then(nlp.extractUtilsIncl)
 			.then(nlp.extractEnsuite)
 			.then(nlp.extractPhone)
-			.then(nlp.extractSemester)
+			// .then(nlp.extractSemester)
 			.then(fbExtractor.extractUser)
 			.then(fbExtractor.extractProfileLink)
 			.then(fbExtractor.extractProfileImage)
@@ -42,6 +42,7 @@ function parseSubletForInfo(sublet, callback){
 
 function saveSublet(sublet){
 	const p = new Promise((resolve, rej)=>{
+		console.log(sublet)
 		// check if the post already exists
 		// Sublet.find({$or: [ { 'postid': sublet.postid }, { $and: [{userid: sublet.userid},{coords: sublet.coords}, {active: true}] } ]}, function(err, response){
 		// 	if(err){return next(err)};
