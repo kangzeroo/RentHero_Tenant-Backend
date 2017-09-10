@@ -47,9 +47,11 @@ function saveSublet(sublet){
 		insert_facebook_sublets(sublet)
 			.then((result) => {
 				console.log(result)
+				resolve(result)
 			})
 	    .catch((error) => {
 	      console.log(error)
+				rej(error)
 	      // res.status(500).send('Failed to save building info')
 	    })
 		// check if the post already exists
