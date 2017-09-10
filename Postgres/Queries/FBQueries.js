@@ -44,16 +44,12 @@ exports.insert_facebook_sublets = (info) => {
     .then((data) => {
       // console.log('Building info inserted in postgres')
       return Promise.resolve({
-        message: 'Successfully saved building',
-        building_id: building_id
+        message: 'Successfully saved sublet',
+        post_id: info.post_id
       })
       // res.json({
       //   message: 'Successfully saved building',
       //   building_id: building_id
       // })
     })
-    // .catch((error) => {
-    //   console.log(error)
-    //   res.status(500).send('Failed to save building info')
-    // })
 }

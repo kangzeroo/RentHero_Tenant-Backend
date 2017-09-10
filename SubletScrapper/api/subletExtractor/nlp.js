@@ -18,8 +18,8 @@ module.exports.BeginParsingChain = function(sublet){
 module.exports.extractAddress = function(sublet){
 	const p = new Promise((res, rej)=>{
 		let address
-		// const parsed_addresses = sublet.message.match(/\(?(\d+[a-fA-F]?)\s(\b[a-zA-Z]*\b)\s(\.|,|\()?([a-zA-Z]*)(\.|,|\:|\)|\n)?\s??(?:[a-zA-Z]*)?(\.|,)?/ig);
-		const parsed_addresses = sublet.message.match(/\(?(\d+[a-fA-F]?)(\s|\,\s|\.\s)(\b[a-zA-Z]*\b)\s(\.|,|\()?([a-zA-Z]*\b)(\.|,|\:|\)|\n)?\s(?:[a-zA-Z]*\b)?(\.|\,|\s)?/ig)
+		// const parsed_addresses = sublet.description.match(/\(?(\d+[a-fA-F]?)\s(\b[a-zA-Z]*\b)\s(\.|,|\()?([a-zA-Z]*)(\.|,|\:|\)|\n)?\s??(?:[a-zA-Z]*)?(\.|,)?/ig);
+		const parsed_addresses = sublet.description.match(/\(?(\d+[a-fA-F]?)(\s|\,\s|\.\s)(\b[a-zA-Z]*\b)\s(\.|,|\()?([a-zA-Z]*\b)(\.|,|\:|\)|\n)?\s(?:[a-zA-Z]*\b)?(\.|\,|\s)?/ig)
 
 		// check for each in parsed_addresses array
 		if(parsed_addresses){
@@ -76,7 +76,7 @@ module.exports.extractAddress = function(sublet){
 module.exports.extractFemalesOnly = function(sublet){
 	const p = new Promise((res, rej)=>{
 		let female_only = false
-		const parsed_females = sublet.message.match(/(\w+)\s(only)/ig)
+		const parsed_females = sublet.description.match(/(\w+)\s(only)/ig)
 
 		if(parsed_females){
 			for(let f = 0; f<parsed_females.length; f++){
@@ -98,7 +98,7 @@ module.exports.extractFemalesOnly = function(sublet){
 module.exports.extractPrice = function(sublet){
 	const p = new Promise((res, rej)=>{
 		let price
-		const parsed_price = sublet.message.match(/[$][ ]?[\d]*[\,|\.]?[ ]?[\d]*\b/g)
+		const parsed_price = sublet.description.match(/[$][ ]?[\d]*[\,|\.]?[ ]?[\d]*\b/g)
 		const filteredParsedPrices = parsed_price.filter((p)=>{
 			let x = parseInt(p.slice(1))
 			// Eliminate the $1 posts
@@ -129,7 +129,7 @@ module.exports.extractPrice = function(sublet){
 module.exports.extractRoomsLeft = function(sublet){
 	const p = new Promise((res, rej)=>{
 		let rooms_left
-		const parsed_rooms_left = sublet.message.match(/((\d)\/(\d)\s(room))|(\d\s(room))/ig)
+		const parsed_rooms_left = sublet.description.match(/((\d)\/(\d)\s(room))|(\d\s(room))/ig)
 
 		if(parsed_rooms_left){
 			for(var rl = 0; rl<parsed_rooms_left.length; rl++){
@@ -140,7 +140,7 @@ module.exports.extractRoomsLeft = function(sublet){
 				}
 			}
 		}
-		sublet.rooms_left = rooms_left
+		sublet.rooms_left = parseInt(rooms_left)
 		res(sublet)
 	})
 	return p
@@ -149,7 +149,7 @@ module.exports.extractRoomsLeft = function(sublet){
 module.exports.extractUtilsIncl = function(sublet){
 	const p = new Promise((res, rej)=>{
 		let utils_incl = false
-		let parsed_utils_incl = sublet.message.match(/\b(util)\w+(\s(incl))?/ig)
+		let parsed_utils_incl = sublet.description.match(/\b(util)\w+(\s(incl))?/ig)
 		if(parsed_utils_incl){
 			utils_incl = true;
 		}
@@ -162,7 +162,7 @@ module.exports.extractUtilsIncl = function(sublet){
 module.exports.extractEnsuite = function(sublet){
 	const p = new Promise((res, rej)=>{
 		let ensuite_bath = false
-		const parsed_ensuite_bath = sublet.message.match(/(en)\s?(suite)/ig)
+		const parsed_ensuite_bath = sublet.description.match(/(en)\s?(suite)/ig)
 		if(parsed_ensuite_bath){
 			ensuite_bath = true
 		}
@@ -175,7 +175,7 @@ module.exports.extractEnsuite = function(sublet){
 module.exports.extractPhone = function(sublet){
 	const p = new Promise((res, rej)=>{
 		let phone
-		const parsed_phone = sublet.message.match(/\b\d{3}[-.]?\d{3}[-.]?\d{4}\b/g)
+		const parsed_phone = sublet.description.match(/\b\d{3}[-.]?\d{3}[-.]?\d{4}\b/g)
 		if(parsed_phone){
 			phone = parsed_phone[0];
 		}
@@ -188,7 +188,7 @@ module.exports.extractPhone = function(sublet){
 module.exports.extractSemester = function(sublet){
 	const p = new Promise((res, rej)=>{
 		let semester
-		const parsed_semester = sublet.message.match(/(\swinter\s)|(\ssummer\s)|(\sspring\s)|(\sfall\s)/ig)
+		const parsed_semester = sublet.description.match(/(\swinter\s)|(\ssummer\s)|(\sspring\s)|(\sfall\s)/ig)
 		if(parsed_semester){
 			semester = parsed_semester[0].slice(1, parsed_semester[0].length-1)
 		}
