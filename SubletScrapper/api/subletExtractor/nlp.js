@@ -140,7 +140,7 @@ module.exports.extractRoomsLeft = function(sublet){
 				}
 			}
 		}
-		sublet.rooms_left = parseInt(rooms_left)
+		sublet.rooms_left = parseInt(rooms_left) || null
 		res(sublet)
 	})
 	return p
