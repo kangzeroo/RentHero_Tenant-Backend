@@ -27,16 +27,7 @@ exports.insert_facebook_sublets = (info) => {
   const insert_sublets = `INSERT INTO facebook_sublets (post_id, post_url, fb_user_id, fb_user_name, fb_user_pic,
                                                         price, address, description, gps_x, gps_y, ensuite_bath, utils_included,
                                                         female_only, rooms_left, location_id, fb_group_id, posted_date, phone, images)
-                               SELECT $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19
-                               FROM facebook_sublets
-                               WHERE NOT EXISTS (
-                                 SELECT fb_user_id, fb_user_name, fb_user_pic, price, address
-                                 FROM facebook_sublets
-                                 WHERE fb_user_id = $3
-                                   AND fb_user_name = $4
-                                   AND fb_user_pic = $5
-                                   AND price = $6
-                                   AND address = $7
+                               VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19)
                                )
                             `
 
