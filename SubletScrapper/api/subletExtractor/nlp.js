@@ -6,7 +6,7 @@ module.exports.BeginParsingChain = function(sublet){
 		const constructedSublet = {
 			post_id: sublet.id,
 			posted_date: new Date(sublet.updated_time).getTime()/1000,
-			message: sublet.message,
+			description: sublet.message,
 			city: 'Waterloo',
 			fb_group_id: sublet.groupid
 		}

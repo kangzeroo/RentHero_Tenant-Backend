@@ -18,8 +18,7 @@ const log_through = data => {
   return data
 }
 
-exports.insert_facebook_sublets = (req, res, next) => {
-  const info = req.body
+exports.insert_facebook_sublets = (info) => {
   const values = [info.post_id, info.post_url, info.fb_user_id, info.fb_user_name, info.fb_user_pic,
                   info.price, info.address, info.description, info.gps_x, info.gps_y, info.ensuite_bath,
                   info.utils_included, info.female_only, info.rooms_left, info.location_id,
@@ -41,16 +40,20 @@ exports.insert_facebook_sublets = (req, res, next) => {
                                )
                             `
 
-  query(insert_sublets, values)
-  .then((data) => {
-    // console.log('Building info inserted in postgres')
-    res.json({
-      message: 'Successfully saved building',
-      building_id: building_id
+  return query(insert_sublets, values)
+    .then((data) => {
+      // console.log('Building info inserted in postgres')
+      return Promise.resolve({
+        message: 'Successfully saved building',
+        building_id: building_id
+      })
+      // res.json({
+      //   message: 'Successfully saved building',
+      //   building_id: building_id
+      // })
     })
-  })
-  .catch((error) => {
-    console.log(error)
-    res.status(500).send('Failed to save building info')
-  })
+    // .catch((error) => {
+    //   console.log(error)
+    //   res.status(500).send('Failed to save building info')
+    // })
 }
