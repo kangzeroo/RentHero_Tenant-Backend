@@ -2,6 +2,7 @@ const nlp = require('./subletExtractor/nlp')
 const fbExtractor = require('./fbExtractor')
 const googleMapsExtractor = require('./googleMapsExtractor')
 const AsyncJS = require('async')
+const insert_facebook_sublets = require('../../Postgres/Queries/FBQueries')
 
 exports.parseAndSaveSublets = function(newSublets){
 	AsyncJS.eachSeries(newSublets, parseSubletForInfo, ()=>{
@@ -43,6 +44,7 @@ function parseSubletForInfo(sublet, callback){
 function saveSublet(sublet){
 	const p = new Promise((resolve, rej)=>{
 		console.log(sublet)
+		insert_facebook_sublets(sublet)
 		// check if the post already exists
 		// Sublet.find({$or: [ { 'postid': sublet.postid }, { $and: [{userid: sublet.userid},{coords: sublet.coords}, {active: true}] } ]}, function(err, response){
 		// 	if(err){return next(err)};
