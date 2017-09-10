@@ -4,12 +4,11 @@ const keywords = require('./keywords')
 module.exports.BeginParsingChain = function(sublet){
 	const p = new Promise((res, rej)=>{
 		const constructedSublet = {
-			postid: sublet.id,
-			created_time: sublet.updated_time,
-			created_time_unix: new Date(sublet.updated_time).getTime()/1000,
+			post_id: sublet.id,
+			posted_date: new Date(sublet.updated_time).getTime()/1000,
 			message: sublet.message,
-			city: sublet.city,
-			groupid: sublet.groupid
+			city: 'Waterloo',
+			fb_group_id: sublet.groupid
 		}
 		res(constructedSublet)
 	})
@@ -119,7 +118,6 @@ module.exports.extractPrice = function(sublet){
 		}
 		if(price){
 			sublet.price = price
-			console.log(price)
 			res(sublet)
 		}else{
 			rej("Did not find a price")
@@ -163,12 +161,12 @@ module.exports.extractUtilsIncl = function(sublet){
 
 module.exports.extractEnsuite = function(sublet){
 	const p = new Promise((res, rej)=>{
-		let ensuite_incl = false
-		const parsed_ensuite_incl = sublet.message.match(/(en)\s?(suite)/ig)
-		if(parsed_ensuite_incl){
-			ensuite_incl = true
+		let ensuite_bath = false
+		const parsed_ensuite_bath = sublet.message.match(/(en)\s?(suite)/ig)
+		if(parsed_ensuite_bath){
+			ensuite_bath = true
 		}
-		sublet.ensuite_incl = ensuite_incl
+		sublet.ensuite_bath = ensuite_bath
 		res(sublet)
 	})
 	return p

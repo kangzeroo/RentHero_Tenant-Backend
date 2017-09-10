@@ -14,7 +14,7 @@ const stringify_rows = res => res.rows.map(row => JSON.stringify(row))
 
 //log_through: log each row
 const log_through = data => {
-  console.log(data)
+  // console.log(data)
   return data
 }
 

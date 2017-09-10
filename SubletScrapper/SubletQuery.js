@@ -47,7 +47,7 @@ exports.check_latest_sublet = (req, res, next) => {
 
 exports.new_sublets = (req, res, next) => {
   // set the facebook token so that we can use it for Facebook API requests
-	fbExtractor.setFacebookToken(tenant.accessToken)
+	fbExtractor.setFacebookToken(req.body.profile.fbToken)
   // save the sublets to database
-	subletParser.parseAndSaveSublets(newSublets)
+	subletParser.parseAndSaveSublets(req.body.newSublets)
 }
