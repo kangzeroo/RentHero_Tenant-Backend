@@ -19,4 +19,5 @@ module.exports = function(app){
 	app.post('/get_specific_building_by_alias', json_encoding, BuildingQuery.get_specific_building_by_alias)
 	app.post('/get_images_for_specific_building', json_encoding, BuildingQuery.get_images_for_specific_building)
 	app.post('/get_amenities_for_specific_building', json_encoding, BuildingQuery.get_amenities_for_specific_building)
+	app.post('/get_available_suites', json_encoding, BuildingQuery.get_available_suites)
 }
