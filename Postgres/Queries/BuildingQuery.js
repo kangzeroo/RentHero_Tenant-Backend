@@ -233,8 +233,6 @@ exports.get_amenities_for_specific_building = (req, res, next) => {
 
 exports.get_available_suites = (req, res, next) => {
   const info = req.body
-  // console.log('===================')
-  // console.log(info)
   const values = [info.building_id]
   let get_suites = `SELECT a.suite_code, a.suite_alias,
                                b.min_price, b.max_price, b.available, b.total
