@@ -70,14 +70,15 @@ exports.get_all_active_buildings = (req, res, next) => {
 
 exports.get_specific_landlord = (req, res, next) => {
   const info = req.body
+  const values = [info.corporation_id]
   let get_landlord = `SELECT *
                       FROM corporation
-                      WHERE corporation_id='${info.corporation_id}'
+                      WHERE corporation_id=$1
                       `
   const return_rows = (rows) => {
     res.json(rows)
   }
-  query(get_landlord)
+  query(get_landlord, values)
     .then((data) => {
       return stringify_rows(data)
     })
@@ -94,11 +95,12 @@ exports.get_specific_landlord = (req, res, next) => {
 
 exports.get_specific_building = (req, res, next) => {
   const info = req.body
+  const values = [info.building_id]
   let get_building =  `SELECT a.building_id, a.corporation_id, a.building_alias,
                              a.building_desc, a.building_type, b.building_address,
                              b.gps_x, b.gps_y,
                              c.thumbnail, c.cover_photo
-                      FROM (SELECT * FROM building WHERE building_id = '${info.building_id}') a
+                      FROM (SELECT * FROM building WHERE building_id = $1) a
                       INNER JOIN
                         (SELECT address_id, CONCAT(street_code, ' ', street_name, ', ', city) AS building_address,
                                 gps_x, gps_y
@@ -114,7 +116,7 @@ exports.get_specific_building = (req, res, next) => {
   const return_rows = (rows) => {
     res.json(rows)
   }
-  query(get_building)
+  query(get_building, values)
     .then((data) => {
       return stringify_rows(data)
     })
@@ -131,12 +133,12 @@ exports.get_specific_building = (req, res, next) => {
 
 exports.get_specific_building_by_alias = (req, res, next) => {
   const info = req.body
-  console.log(info)
+  const values = [info.building_alias]
   let get_building =  `SELECT a.building_id, a.corporation_id, a.building_alias,
                              a.building_desc, a.building_type, b.building_address,
                              b.gps_x, b.gps_y,
                              c.thumbnail, c.cover_photo
-                      FROM (SELECT * FROM building WHERE building_alias = '${info.building_alias}') a
+                      FROM (SELECT * FROM building WHERE building_alias = $1) a
                       INNER JOIN
                         (SELECT address_id, CONCAT(street_code, ' ', street_name, ', ', city) AS building_address,
                                 gps_x, gps_y
@@ -152,7 +154,7 @@ exports.get_specific_building_by_alias = (req, res, next) => {
   const return_rows = (rows) => {
     res.json(rows)
   }
-  query(get_building)
+  query(get_building, values)
     .then((data) => {
       return stringify_rows(data)
     })
@@ -169,8 +171,9 @@ exports.get_specific_building_by_alias = (req, res, next) => {
 
 exports.get_images_for_specific_building = (req, res, next) => {
   const info = req.body
+  const values = [info.building_id]
   let get_images =  `SELECT image_url, caption, position FROM images
-                        WHERE building_id = '${info.building_id}'
+                        WHERE building_id = $1
                           AND suite_id IS NULL
                           AND room_id IS NULL
                         ORDER BY position
@@ -178,7 +181,7 @@ exports.get_images_for_specific_building = (req, res, next) => {
   const return_rows = (rows) => {
     res.json(rows)
   }
-  query(get_images)
+  query(get_images, values)
     .then((data) => {
       return stringify_rows(data)
     })
@@ -195,16 +198,17 @@ exports.get_images_for_specific_building = (req, res, next) => {
 
 exports.get_amenities_for_specific_building = (req, res, next) => {
   const info = req.body
+  const values = [info.building_id]
   let get_amenities =  `SELECT building_id, amenity_alias, amenity_type, amenity_class
                          FROM amenities
-                         WHERE building_id = '${info.building_id}'
+                         WHERE building_id = $1
                            AND suite_id IS NULL
                            AND room_id IS NULL
                       `
   const return_rows = (rows) => {
     res.json(rows)
   }
-  query(get_amenities)
+  query(get_amenities, values)
     .then((data) => {
       return stringify_rows(data)
     })
