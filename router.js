@@ -25,6 +25,8 @@ module.exports = function(app){
 	app.post('/get_specific_building_by_alias', json_encoding, BuildingQuery.get_specific_building_by_alias)
 	app.post('/get_images_for_specific_building', json_encoding, BuildingQuery.get_images_for_specific_building)
 	app.post('/get_amenities_for_specific_building', json_encoding, BuildingQuery.get_amenities_for_specific_building)
+	app.post('/get_suite_page', json_encoding, BuildingQuery.get_suite_page)
+	app.post('/get_all_rooms_for_suite', json_encoding, BuildingQuery.get_all_rooms_for_suite)
 
 	// sublet routes
 	app.post('/check_latest_sublet', json_encoding, SubletQuery.check_latest_sublet)
