@@ -50,7 +50,7 @@ function saveSublet(sublet){
 			})
 	    .catch((error) => {
 	      console.log(error)
-	      res.status(500).send('Failed to save building info')
+	      // res.status(500).send('Failed to save building info')
 	    })
 		// check if the post already exists
 		// Sublet.find({$or: [ { 'postid': sublet.postid }, { $and: [{userid: sublet.userid},{coords: sublet.coords}, {active: true}] } ]}, function(err, response){

@@ -24,7 +24,7 @@ const log_through = data => {
 exports.check_latest_sublet = (req, res, next) => {
   const info = req.body
 
-  let check_sublets = ``
+  let check_sublets = `SELECT * FROM facebook_sublets WHERE fb_group_id='${info.group_id}' `
 
   const return_rows = (rows) => {
     res.json(rows)
