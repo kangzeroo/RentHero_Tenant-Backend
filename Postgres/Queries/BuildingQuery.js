@@ -230,3 +230,44 @@ exports.get_amenities_for_specific_building = (req, res, next) => {
         res.status(500).send('Failed to get property info')
     })
 }
+
+exports.get_available_suites = (req, res, next) => {
+  const info = req.body
+  console.log('===================')
+  console.log(info)
+  const values = [info.building_id]
+  let get_suites = `SELECT a.suite_code, a.suite_alias,
+                               b.min_price, b.max_price, b.available, b.total
+                          FROM (SELECT suite_id, suite_code, suite_alias
+                                  FROM suite
+                                  WHERE building_id = $1) a
+                          INNER JOIN (
+                            SELECT suite_id,
+                                   MIN(price) AS min_price, MAX(price) AS max_price,
+                                   (COUNT(*) - COUNT(CASE WHEN occupied THEN 1 END)) AS available,
+                                   COUNT(*) AS total
+                              FROM room
+                              WHERE building_id = $1
+                              GROUP BY suite_id
+                              ORDER BY suite_id
+                          ) b
+                          ON a.suite_id = b.suite_id
+                          ORDER BY a.suite_code
+                       `
+  const return_rows = (rows) => {
+    res.json(rows)
+  }
+  query(get_suites, values)
+    .then((data) => {
+      return stringify_rows(data)
+    })
+    .then((data) => {
+      return log_through(data)
+    })
+    .then((data) => {
+      return return_rows(data)
+    })
+    .catch((error) => {
+        res.status(500).send('Failed to get property info')
+    })
+}
