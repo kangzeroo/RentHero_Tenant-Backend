@@ -36,6 +36,6 @@ module.exports = function(app){
 	// specific building routes
 	app.post('/get_available_suites', json_encoding, BuildingQuery.get_available_suites)
 	app.post('/get_amenities_for_suite', json_encoding, BuildingQuery.get_amenities_for_suite)
-	app.post('/get_rooms_for_suite', json_encoding, BuildingQuery.get_rooms_for_suite)
+	app.post('/get_all_rooms_for_suite', json_encoding, BuildingQuery.get_all_rooms_for_suite)
 
 }
