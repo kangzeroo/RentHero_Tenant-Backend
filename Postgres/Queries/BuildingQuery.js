@@ -312,13 +312,64 @@ exports.get_amenities_for_suite = (req, res, next) => {
     })
 }
 
-
-exports.get_rooms_for_suite = (req, res, next) => {
-  console.log('get_rooms_for_suite')
+exports.get_suite_page = (req, res, next) => {
   const info = req.body
-  const values = []
-  const get_rooms = ``
+  const values = [info.building_id, info.suite_id]
+  let get_suites = `SELECT a.suite_id, a.suite_code, a.suite_alias, a.suite_desc,
+                           b.cover_photo, b.thumbnail, b.istaging_url,
+                           c.imgs
+                      FROM (SELECT * FROM suite
+                             WHERE building_id = $1
+                               AND suite_id = $2) a
+                      INNER JOIN (SELECT * FROM media
+                                  WHERE room_id IS NULL) b
+                      ON a.building_id = b.building_id AND a.suite_id = b.suite_id
+                      LEFT OUTER JOIN (SELECT suite_id, array_agg(image_url) AS imgs
+                                    FROM images
+                                    WHERE suite_id = $2
+                                      AND room_id IS NULL
+                                    GROUP BY suite_id) c
+                      ON b.suite_id = c.suite_id
+                   `
+  const return_rows = (rows) => {
+    res.json(rows)
+  }
+  query(get_suites, values)
+    .then((data) => {
+      return stringify_rows(data)
+    })
+    .then((data) => {
+      return log_through(data)
+    })
+    .then((data) => {
+      return return_rows(data)
+    })
+    .catch((error) => {
+        res.status(500).send('Failed to get property info')
+    })
+}
 
+exports.get_all_rooms_for_suite = (req, res, next) => {
+  const info = req.body
+  const values = [info.building_id, info.suite_id]
+  let get_rooms = `SELECT a.room_code, a.room_alias, a.room_desc, a.price, a.occupied,
+                           b.thumbnail, b.istaging_url, c.imgs
+                      FROM (SELECT * FROM room
+                             WHERE building_id = $1
+                               AND suite_id = $2 ) a
+                     LEFT OUTER JOIN (SELECT * FROM media
+                                  WHERE building_id = $1
+                                    AND suite_id = $2
+                                    AND room_id IS NOT NULL) b
+                      ON a.building_id = b.building_id AND a.suite_id = b.suite_id AND a.room_id = b.room_id
+                      LEFT OUTER JOIN (SELECT room_id, array_agg(image_url) AS imgs
+                                    FROM images
+                                    WHERE building_id = $1
+                                      AND suite_id = $2
+                                      AND room_id IS NOT NULL
+                                    GROUP BY room_id) c
+                      ON b.room_id = c.room_id
+                   `
   const return_rows = (rows) => {
     res.json(rows)
   }
