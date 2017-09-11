@@ -234,7 +234,7 @@ exports.get_amenities_for_specific_building = (req, res, next) => {
 exports.get_available_suites = (req, res, next) => {
   const info = req.body
   const values = [info.building_id]
-  let get_suites = `SELECT a.suite_code, a.suite_alias,
+  let get_suites = `SELECT a.suite_id, a.suite_code, a.suite_alias,
                                b.min_price, b.max_price, b.available, b.total
                           FROM (SELECT suite_id, suite_code, suite_alias
                                   FROM suite
@@ -267,5 +267,72 @@ exports.get_available_suites = (req, res, next) => {
     })
     .catch((error) => {
         res.status(500).send('Failed to get property info')
+    })
+}
+
+exports.get_amenities_for_suite = (req, res, next) => {
+  console.log('get_amenities_for_suite')
+  const info = req.body
+  const values = [info.building_id, info.suite_id]
+  const get_amenities = `SELECT DISTINCT a.amenity_alias, a.amenity_type, a.amenity_class,
+                                c.imgs
+                          FROM (SELECT * FROM amenities
+                                WHERE building_id = $1
+                                  AND suite_id = $2
+                                  AND room_id IS NULL) a
+                          LEFT OUTER JOIN
+                            amenities_images b
+                          ON a.building_id = b.building_id AND a.suite_id = b.suite_id
+                          LEFT OUTER JOIN
+                            (SELECT suite_id, array_agg(image_url) AS imgs
+                               FROM images
+                               WHERE building_id = $1
+                                 AND suite_id = $2
+                                 AND room_id IS NULL
+                               GROUP BY suite_id) c
+                           ON b.suite_id = c.suite_id
+
+                            `
+
+  const return_rows = (rows) => {
+    res.json(rows)
+  }
+  query(get_amenities, values)
+    .then((data) => {
+      return stringify_rows(data)
+    })
+    .then((data) => {
+      return log_through(data)
+    })
+    .then((data) => {
+      return return_rows(data)
+    })
+    .catch((error) => {
+        res.status(500).send('Failed to get suite amenities info')
+    })
+}
+
+
+exports.get_rooms_for_suite = (req, res, next) => {
+  console.log('get_rooms_for_suite')
+  const info = req.body
+  const values = []
+  const get_rooms = ``
+
+  const return_rows = (rows) => {
+    res.json(rows)
+  }
+  query(get_rooms, values)
+    .then((data) => {
+      return stringify_rows(data)
+    })
+    .then((data) => {
+      return log_through(data)
+    })
+    .then((data) => {
+      return return_rows(data)
+    })
+    .catch((error) => {
+        res.status(500).send('Failed to get rooms for suite')
     })
 }
