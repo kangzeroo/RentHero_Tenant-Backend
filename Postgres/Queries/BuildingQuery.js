@@ -332,7 +332,7 @@ exports.get_suite_page = (req, res, next) => {
                       ON b.suite_id = c.suite_id
                    `
   const return_rows = (rows) => {
-    res.json(rows)
+    res.json(rows[0])
   }
   query(get_suites, values)
     .then((data) => {
