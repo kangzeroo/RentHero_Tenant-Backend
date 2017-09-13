@@ -352,7 +352,7 @@ exports.get_suite_page = (req, res, next) => {
 exports.get_all_rooms_for_suite = (req, res, next) => {
   const info = req.body
   const values = [info.building_id, info.suite_id]
-  let get_rooms = `SELECT a.room_code, a.room_alias, a.room_desc, a.price, a.occupied,
+  let get_rooms = `SELECT a.building_id, a.suite_id, a.room_id, a.room_code, a.room_alias, a.room_desc, a.price, a.occupied,
                            b.thumbnail, b.istaging_url, c.imgs
                       FROM (SELECT * FROM room
                              WHERE building_id = $1
