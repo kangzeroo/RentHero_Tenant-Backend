@@ -23,8 +23,8 @@ module.exports.parseGPS = function(sublet){
 		  if(result){
 		  	if(result.results[0]){
 			  	// take the coords of the first result
-			  	sublet.gps_x = parseFloat(result.results[0].geometry.location.lng.toFixed(7))
-					sublet.gps_y = parseFloat(result.results[0].geometry.location.lat.toFixed(7))
+			  	sublet.gps_x = parseFloat(result.results[0].geometry.location.lat.toFixed(7))
+					sublet.gps_y = parseFloat(result.results[0].geometry.location.lng.toFixed(7))
 					sublet.place_id = result.results[0].place_id
 			  	res(sublet);
 			}else{
