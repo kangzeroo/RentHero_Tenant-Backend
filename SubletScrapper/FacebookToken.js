@@ -19,11 +19,12 @@ exports.longlivetoken = function(req, res, next){
 			// let positionEnd = longLiveToken.indexOf('&expires=')
 			// longLiveToken = longLiveToken.slice(0, positionEnd)
       const longLiveToken = data.data.access_token
-			console.log(longLiveToken)
+			const tokenExpiry = data.data.expires_in
+			console.log(data.data)
 			console.log("================================ FB TOKEN END ================================")
 			res.json({
 				message: "Success getting the long lived fb token!",
-				longLiveToken: longLiveToken
+				longLiveToken: data.data
 			})
 		})
 		.catch((err)=>{
