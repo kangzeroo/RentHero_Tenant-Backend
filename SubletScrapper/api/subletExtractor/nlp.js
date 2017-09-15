@@ -19,7 +19,7 @@ module.exports.extractAddress = function(sublet){
 	const p = new Promise((res, rej)=>{
 		let address
 		// const parsed_addresses = sublet.description.match(/\(?(\d+[a-fA-F]?)\s(\b[a-zA-Z]*\b)\s(\.|,|\()?([a-zA-Z]*)(\.|,|\:|\)|\n)?\s??(?:[a-zA-Z]*)?(\.|,)?/ig);
-		const parsed_addresses = sublet.description.match(/\(?(\d+[a-fA-F]?)(\s|\,\s|\.\s)(\b[a-zA-Z]*\b)\s(\.|,|\()?([a-zA-Z]*\b)(\.|,|\:|\)|\n)?\s(?:[a-zA-Z]*\b)?(\.|\,|\s)?/ig)
+		const parsed_addresses = sublet.description.match(/\(?(\d+[a-fA-F]?)(\s|\,\s|\.\s)(\b[a-zA-Z]*\b)\s(\.|,|\()?([a-zA-Z]*\b)(\.|,|\:|\)|\n)?\s(?:[a-zA-Z]*\b)?(\.|\,|\s)?[\r\n]?/ig)
 
 		// check for each in parsed_addresses array
 		if(parsed_addresses){
@@ -67,6 +67,10 @@ module.exports.extractAddress = function(sublet){
 			sublet.address = address
 			res(sublet)
 		}else{
+			console.log('============ FAILED TO FIND ADDRESS ============')
+			console.log(parsed_addresses)
+			console.log(sublet.description)
+			console.log('================================================')
 			rej("Could not find address")
 		}
 	})
