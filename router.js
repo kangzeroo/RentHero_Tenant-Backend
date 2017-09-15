@@ -45,6 +45,7 @@ module.exports = function(app){
 
 	// facebook queries
 	app.post('/get_fb_posts', json_encoding, FBQueries.get_fb_posts)
+	app.post('/get_fb_post_by_id', json_encoding, FBQueries.get_fb_post_by_id)
 
 	// sublet routes
 	app.post('/check_latest_sublet', json_encoding, SubletQuery.check_latest_sublet)
