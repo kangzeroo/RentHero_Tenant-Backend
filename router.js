@@ -3,6 +3,7 @@ const bodyParser = require('body-parser')
 const Test = require('./routes/test_routes')
 const BuildingQuery = require('./Postgres/Queries/BuildingQuery')
 const RoomQuery = require('./Postgres/Queries/RoomQuery')
+const FilterQueries = require('./Postgres/Queries/FilterQueries')
 const SubletQuery = require('./SubletScrapper/SubletQuery')
 const FBQueries = require('./Postgres/Queries/FBQueries')
 const Authentication = require('./SubletScrapper/FacebookToken')
@@ -42,5 +43,8 @@ module.exports = function(app){
 	app.post('/get_available_suites', json_encoding, BuildingQuery.get_available_suites)
 	app.post('/get_amenities_for_suite', json_encoding, BuildingQuery.get_amenities_for_suite)
 	app.post('/get_all_rooms_for_suite', json_encoding, BuildingQuery.get_all_rooms_for_suite)
+
+	// filter buidlings queries
+	app.post('/filter_buildings', json_encoding, FilterQueries.filter_buildings)
 
 }
