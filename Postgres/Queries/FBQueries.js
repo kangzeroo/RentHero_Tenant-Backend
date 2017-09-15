@@ -149,15 +149,11 @@ exports.sort_fb_posts = (req, res, next) => {
 
 exports.filter_fb_posts = (req, res, next) => {
   const info = req.body
-  const values = [info.price.min, info.price.max, info.room_count, info.ensuite_bath, info.utils_incl, info.female_only]
+  const values = [info.price.min, info.price.max]
 
   let get_posts =  `SELECT * FROM facebook_sublets
                      WHERE price >= $1
                        AND price <= $2
-                       AND rooms_left >= $3
-                       AND ensuite_bath = $4
-                       AND utils_included = $5
-                       AND female_only = $6
                       `
   const return_rows = (rows) => {
     res.json(rows)
