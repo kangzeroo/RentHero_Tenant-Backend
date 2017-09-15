@@ -105,3 +105,74 @@ exports.get_fb_post_by_id = (req, res, next) => {
         res.status(500).send('Failed to get property info')
     })
 }
+
+exports.sort_fb_posts = (req, res, next) => {
+  const info = req.body
+
+  let get_buildings
+
+  if (info.sort_by === 'pricelow') {
+    get_buildings = `SELECT * FROM facebook_sublets
+                      ORDER BY price
+                        `
+  } else if (info.sort_by === 'pricehigh') {
+    get_buildings = `SELECT * FROM facebook_sublets
+                      ORDER BY price DESC
+                        `
+  } else if (info.sort_by === 'datenew') {
+    get_buildings = `SELECT * FROM facebook_sublets
+                      ORDER BY created_at DESC
+                        `
+  } else if (info.sort_by === 'dateold') {
+    get_buildings = `SELECT * FROM facebook_sublets
+                      ORDER BY created_at
+                        `
+  }
+
+  const return_rows = (rows) => {
+    res.json(rows)
+  }
+  query(get_buildings)
+    .then((data) => {
+      return stringify_rows(data)
+    })
+    .then((data) => {
+      return log_through(data)
+    })
+    .then((data) => {
+      return return_rows(data)
+    })
+    .catch((error) => {
+        res.status(500).send('Failed to get buildings info')
+    })
+}
+
+exports.filter_fb_posts = (req, res, next) => {
+  const info = req.body
+  const values = [info.price.min, info.price.max, info.room_count, info.ensuite_bath, info.utils_incl, info.female_only]
+
+  let get_posts =  `SELECT * FROM facebook_sublets
+                     WHERE price >= $1
+                       AND price <= $2
+                       AND rooms_left >= $3
+                       AND ensuite_bath = $4
+                       AND utils_included = $5
+                       AND female_only = $6
+                      `
+  const return_rows = (rows) => {
+    res.json(rows)
+  }
+  query(get_posts, values)
+    .then((data) => {
+      return stringify_rows(data)
+    })
+    .then((data) => {
+      return log_through(data)
+    })
+    .then((data) => {
+      return return_rows(data)
+    })
+    .catch((error) => {
+        res.status(500).send('Failed to get property info')
+    })
+}
