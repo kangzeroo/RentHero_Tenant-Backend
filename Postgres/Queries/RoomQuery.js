@@ -30,13 +30,13 @@ exports.get_room_page = (req, res, next) => {
                           WHERE building_id = $1
                             AND suite_id = $2
                             AND room_id = $3) a
-                    INNER JOIN (SELECT * FROM media
+                    LEFT OUTER JOIN (SELECT * FROM media
                                  WHERE building_id = $1
                                    AND suite_id = $2
                                    AND room_id = $3) b
                     ON a.building_id = b.building_id AND a.suite_id = b.suite_id
                       AND a.room_id = b.room_id
-                    INNER JOIN (SELECT room_id, array_agg(image_url) AS imgs
+                    LEFT OUTER JOIN (SELECT room_id, array_agg(image_url) AS imgs
                                   FROM images
                                   WHERE room_id = $3
                                 GROUP BY room_id) c
