@@ -58,3 +58,26 @@ exports.check_latest_sublet = (info) => {
       return log_through(data)
     })
 }
+
+exports.get_fb_posts = (req, res, next) => {
+  const info = req.body
+
+  let get_posts =  `SELECT * FROM facebook_sublets ORDER BY created_at DESC
+                      `
+  const return_rows = (rows) => {
+    res.json(rows)
+  }
+  query(get_posts)
+    .then((data) => {
+      return stringify_rows(data)
+    })
+    .then((data) => {
+      return log_through(data)
+    })
+    .then((data) => {
+      return return_rows(data)
+    })
+    .catch((error) => {
+        res.status(500).send('Failed to get property info')
+    })
+}
