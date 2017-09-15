@@ -46,5 +46,5 @@ module.exports = function(app){
 
 	// filter buidlings queries
 	app.post('/filter_buildings', json_encoding, FilterQueries.filter_buildings)
-
+	app.post('/sort_buildings', json_encoding, FilterQueries.sort_buildings)
 }
