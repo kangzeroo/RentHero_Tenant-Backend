@@ -98,7 +98,7 @@ exports.get_specific_building = (req, res, next) => {
   const values = [info.building_id]
   let get_building =  `SELECT a.building_id, a.corporation_id, a.building_alias,
                              a.building_desc, a.building_type, b.building_address,
-                             b.gps_x, b.gps_y,
+                             b.gps_x, b.gps_y, b.istaging_url,
                              c.thumbnail, c.cover_photo
                       FROM (SELECT * FROM building WHERE building_id = $1) a
                       INNER JOIN
@@ -107,7 +107,7 @@ exports.get_specific_building = (req, res, next) => {
                         FROM address) b
                         ON a.address_id = b.address_id
                       INNER JOIN
-                        (SELECT building_id, thumbnail, cover_photo FROM media
+                        (SELECT building_id, thumbnail, cover_photo, istaging_url FROM media
                           WHERE building_id IS NOT NULL
                             AND suite_id IS NULL
                             AND room_id IS NULL) c
@@ -137,7 +137,7 @@ exports.get_specific_building_by_alias = (req, res, next) => {
   let get_building =  `SELECT a.building_id, a.corporation_id, a.building_alias,
                              a.building_desc, a.building_type, b.building_address,
                              b.gps_x, b.gps_y,
-                             c.thumbnail, c.cover_photo
+                             c.thumbnail, c.cover_photo, c.istaging_url, d.imgs
                       FROM (SELECT * FROM building WHERE building_alias = $1) a
                       INNER JOIN
                         (SELECT address_id, CONCAT(street_code, ' ', street_name, ', ', city) AS building_address,
@@ -145,11 +145,20 @@ exports.get_specific_building_by_alias = (req, res, next) => {
                         FROM address) b
                         ON a.address_id = b.address_id
                       INNER JOIN
-                        (SELECT building_id, thumbnail, cover_photo FROM media
+                        (SELECT building_id, thumbnail, cover_photo, istaging_url
+                           FROM media
                           WHERE building_id IS NOT NULL
                             AND suite_id IS NULL
                             AND room_id IS NULL) c
                         ON a.building_id = c.building_id
+                      INNER JOIN
+                        (SELECT building_id, array_agg(image_url ORDER BY position) AS imgs
+                          FROM images
+                          WHERE suite_id IS NULL
+                            AND room_id IS NULL
+                          GROUP BY building_id
+                        ) d
+                      ON a.building_id = d.building_id
                       `
   const return_rows = (rows) => {
     res.json(rows)
