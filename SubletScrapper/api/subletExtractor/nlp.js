@@ -67,14 +67,56 @@ module.exports.extractAddress = function(sublet){
 			sublet.address = address
 			res(sublet)
 		}else{
-			console.log('============ FAILED TO FIND ADDRESS ============')
-			console.log(parsed_addresses)
-			console.log(sublet.description)
-			console.log('================================================')
-			rej("Could not find address")
+			parseOnCommonStreetNames(sublet).then((foundSublet) => {
+				res(foundSublet)
+			}).catch((err) => {
+				console.log('============ FAILED TO FIND ADDRESS ============')
+				rej(err)
+			})
 		}
 	})
 	return p
+}
+
+
+function parseOnCommonStreetNames(sublet){
+  const p = new Promise((res, rej) => {
+    keywords.common_street_shortnames.forEach((streetname, index) => {
+      const regexMatch = new RegExp(`\\d+\\s(${streetname.alias})`, 'ig')
+    	const parsed_addresses = sublet.description.match(regexMatch)
+      if (parsed_addresses) {
+        const fullStreet = parsed_addresses[0].match(/\d+/ig)[0] + ' ' + streetname.address
+        console.log(fullStreet)
+        sublet.address = fullStreet
+        res(sublet)
+      }
+      if (index === keywords.common_street_shortnames.length -1) {
+        parseOnCommonBuildingAliases(sublet).then((parsedSublet) => {
+          res(parsedSublet)
+        }).catch((err) => {
+          rej(err)
+        })
+      }
+    })
+  })
+  return p
+}
+
+function parseOnCommonBuildingAliases(sublet){
+  const p = new Promise((res, rej) => {
+    keywords.common_building_aliases.forEach((buildingAlias, index) => {
+      const regexMatch = new RegExp(`(${buildingAlias.alias})`, 'ig')
+    	const parsed_addresses = sublet.description.match(regexMatch)
+      if (parsed_addresses) {
+        sublet.address = buildingAlias.address
+        res(sublet)
+      }
+      if (index === keywords.common_street_shortnames.length -1) {
+        rej('Could not find by building alias or street shortname')
+      }
+    })
+  })
+  return p
 }
 
 module.exports.extractFemalesOnly = function(sublet){
@@ -103,28 +145,32 @@ module.exports.extractPrice = function(sublet){
 	const p = new Promise((res, rej)=>{
 		let price
 		const parsed_price = sublet.description.match(/[$][ ]?[\d]*[\,|\.]?[ ]?[\d]*\b/g)
-		const filteredParsedPrices = parsed_price.filter((p)=>{
-			let x = parseInt(p.slice(1))
-			// Eliminate the $1 posts
-			return x>1
-		})
-		if(filteredParsedPrices){
-			price = parseInt(filteredParsedPrices[0].slice(1))
-			for(var pr = 0; pr<filteredParsedPrices.length; pr++){
-				// check if each identified price is lower than the first
-				if(parseInt(filteredParsedPrices[pr].slice(1))<price && parseInt(filteredParsedPrices[pr].slice(1))>price-150){
-					// and if it is, we assume the lower price is the listing price
-					price = parseInt(filteredParsedPrices[pr].slice(1))
+		if (parsed_price) {
+			const filteredParsedPrices = parsed_price.filter((p)=>{
+				let x = parseInt(p.slice(1))
+				// Eliminate the $1 posts
+				return x>1
+			})
+			if(filteredParsedPrices){
+				price = parseInt(filteredParsedPrices[0].slice(1))
+				for(var pr = 0; pr<filteredParsedPrices.length; pr++){
+					// check if each identified price is lower than the first
+					if(parseInt(filteredParsedPrices[pr].slice(1))<price && parseInt(filteredParsedPrices[pr].slice(1))>price-150){
+						// and if it is, we assume the lower price is the listing price
+						price = parseInt(filteredParsedPrices[pr].slice(1))
+					}
 				}
+			}else{
+				rej("Could not filter prices, or empty prices")
 			}
-		}else{
+			if(price){
+				sublet.price = price
+				res(sublet)
+			}else{
+				rej("Did not find a price")
+			}
+		} else {
 			rej("Could not filter prices, or empty prices")
-		}
-		if(price){
-			sublet.price = price
-			res(sublet)
-		}else{
-			rej("Did not find a price")
 		}
 	})
 	return p
