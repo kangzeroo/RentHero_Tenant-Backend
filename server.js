@@ -1,6 +1,6 @@
 const express = require('express')
-const https = require('https')
-// const http = require('http')
+// const https = require('https')
+const http = require('http')
 const fs = require('fs')
 const morgan = require('morgan')
 const router = require('./router')
@@ -34,8 +34,8 @@ const options = {
 const port = process.env.PORT || 3002
 
 // create a server with the native node https library
-const server = https.createServer(options, app)
-// const server = http.createServer(app)
+// const server = https.createServer(options, app)
+const server = http.createServer(app);
 
 // listen to the server on port
 server.listen(port, function(){

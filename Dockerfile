@@ -1,8 +1,10 @@
 FROM nodesource/trusty:6.3.1
 
-ADD package.json package.json
+RUN mkdir /app
+WORKDIR /app
+ADD package.json /app
 RUN npm install
-ADD . .
+ADD . /app
 
 EXPOSE 3002
 
