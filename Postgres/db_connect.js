@@ -1,7 +1,7 @@
 const pg = require('pg')
 
 
-const env = process.env.NODE_ENV || 'development'
+const env = process.env.NODE_ENV || 'production'
 const config = require('./config')[env]
 
 // create a config to configure both pooling behavior

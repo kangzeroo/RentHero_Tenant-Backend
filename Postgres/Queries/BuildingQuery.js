@@ -209,7 +209,7 @@ exports.get_amenities_for_specific_building = (req, res, next) => {
   const info = req.body
   const values = [info.building_id]
   let get_amenities =  `SELECT a.building_id, a.amenity_alias, a.amenity_type, a.amenity_class,
-                               array_agg(c.image_url) AS image_urls
+                               array_agg(c.image_url) AS imgs
                          FROM (SELECT * FROM amenities
                                 WHERE building_id = $1
                                   AND suite_id IS NULL
