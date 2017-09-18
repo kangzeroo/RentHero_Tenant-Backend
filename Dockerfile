@@ -1,6 +1,7 @@
 FROM nodesource/trusty:6.3.1
 
 ADD package.json package.json
+RUN /bin/su nonroot
 RUN npm install
 ADD . .
 
