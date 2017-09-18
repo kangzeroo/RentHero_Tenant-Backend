@@ -1,5 +1,5 @@
 const express = require('express')
-// const https = require('https')
+const https = require('https')
 const http = require('http')
 const fs = require('fs')
 const morgan = require('morgan')
@@ -34,11 +34,18 @@ const options = {
 const port = process.env.PORT || 3002
 
 // create a server with the native node https library
-// const server = https.createServer(options, app)
-const server = http.createServer(app);
-
-// listen to the server on port
-server.listen(port, function(){
-  console.log("Getting ready to go...")
-  console.log("Server listening on: ", port)
-})
+if (process.env.NODE_ENV === 'production') {
+  const server = http.createServer(app);
+  // listen to the server on port
+  server.listen(port, function(){
+    console.log("Getting ready to go...")
+    console.log("Server listening on: ", port)
+  })
+} else {
+  const server = https.createServer(options, app)
+  // listen to the server on port
+  server.listen(port, function(){
+    console.log("Getting ready to go...")
+    console.log("Server listening on: ", port)
+  })
+}
