@@ -21,14 +21,14 @@ const log_through = data => {
 exports.insert_facebook_sublets = (info) => {
   const values = [info.post_id, info.post_url, info.fb_user_id, info.fb_user_name, info.fb_user_pic,
                   info.price, info.address, info.description, info.gps_x, info.gps_y, info.ensuite_bath,
-                  info.utils_included, info.female_only, info.rooms_left, info.place_id,
+                  info.utils_included, info.female_only, info.rooms_left,
                   info.fb_group_id, info.posted_date, info.phone, info.images]
 
 
     const insert_sublets = `INSERT INTO facebook_sublets (post_id, post_url, fb_user_id, fb_user_name, fb_user_pic,
                                                           price, address, description, gps_x, gps_y, ensuite_bath, utils_included,
-                                                          female_only, rooms_left, place_id, fb_group_id, posted_date, phone, images)
-                                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19)
+                                                          female_only, rooms_left, fb_group_id, posted_date, phone, images)
+                                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)
                               `
   return query(insert_sublets, values)
   .then((data) => {
