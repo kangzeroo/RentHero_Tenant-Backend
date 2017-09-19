@@ -153,7 +153,7 @@ exports.filter_fb_posts = (req, res, next) => {
 
   let get_posts =  `SELECT * FROM facebook_sublets
                      WHERE price >= $1
-                       AND price <= $2
+                       AND price < $2
                       `
   const return_rows = (rows) => {
     res.json(rows)
