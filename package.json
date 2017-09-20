@@ -18,6 +18,7 @@
     "axios": "0.16.2",
     "body-parser": "1.17.2",
     "cors": "2.8.3",
+    "dynamodb-doc": "^1.0.0",
     "express": "4.15.3",
     "fb": "2.0.0",
     "forever": "0.15.3",

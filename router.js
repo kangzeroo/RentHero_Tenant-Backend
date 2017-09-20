@@ -6,7 +6,6 @@ const SuiteQuery = require('./Postgres/Queries/SuiteQuery')
 const RoomQuery = require('./Postgres/Queries/RoomQuery')
 const FilterQueries = require('./Postgres/Queries/FilterQueries')
 const SubletQuery = require('./SubletScrapper/SubletQuery')
-const FBQueries = require('./Postgres/Queries/FBQueries')
 const Authentication = require('./SubletScrapper/FacebookToken')
 
 // bodyParser attempts to parse any request into JSON format
@@ -43,14 +42,10 @@ module.exports = function(app){
 	app.post('/filter_buildings', json_encoding, FilterQueries.filter_buildings)
 	app.post('/sort_buildings', json_encoding, FilterQueries.sort_buildings)
 
-	// facebook queries
-	app.post('/get_fb_posts', json_encoding, FBQueries.get_fb_posts)
-	app.post('/get_fb_post_by_id', json_encoding, FBQueries.get_fb_post_by_id)
-	app.post('/sort_fb_posts', json_encoding, FBQueries.sort_fb_posts)
-	app.post('/filter_fb_posts', json_encoding, FBQueries.filter_fb_posts)
-
 	// sublet routes
 	app.post('/check_latest_sublet', json_encoding, SubletQuery.check_latest_sublet)
+	app.post('/get_sublets', json_encoding, SubletQuery.get_sublets)
 	app.post('/new_sublets', json_encoding, SubletQuery.new_sublets)
+	app.post('/get_sublet_by_id', json_encoding, SubletQuery.get_sublet_by_id)
 	app.post('/longlivetoken', json_encoding, Authentication.longlivetoken);
 }

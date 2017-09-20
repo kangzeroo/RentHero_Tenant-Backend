@@ -2,16 +2,26 @@ const nlp = require('./subletExtractor/nlp')
 const fbExtractor = require('./fbExtractor')
 const googleMapsExtractor = require('./googleMapsExtractor')
 const AsyncJS = require('async')
-const insert_facebook_sublets = require('../../Postgres/Queries/FBQueries').insert_facebook_sublets
+const insert_sublet = require('../../DynamoDB/dynamodb_api').insert_sublet
 
 exports.parseAndSaveSublets = function(newSublets){
-	AsyncJS.eachSeries(newSublets, parseSubletForInfo, ()=>{
+	console.log('NEW SUBLETS: ', newSublets.length)
+	// AsyncJS.eachSeries(newSublets, parseSubletForInfo, ()=>{
+	// 	console.log("Finish looping through all the new sublets!")
+	// })
+	const allSublets = newSublets.map((sublet) => {
+		return parseSubletForInfo(sublet)
+	})
+	Promise.all(allSublets).then((results) => {
 		console.log("Finish looping through all the new sublets!")
+	}).catch((err) => {
+		console.log(err)
+		console.log('ERROR AT END')
 	})
 }
 
 function parseSubletForInfo(sublet, callback){
-	nlp.BeginParsingChain(sublet)
+	return nlp.BeginParsingChain(sublet)
 			.then(nlp.extractAddress)
 			.then(nlp.extractFemalesOnly)
 			.then(nlp.extractPrice)
@@ -26,31 +36,17 @@ function parseSubletForInfo(sublet, callback){
 			.then(fbExtractor.extractPostImages)
 			.then(googleMapsExtractor.parseGPS)
 			.then(saveSublet)
-			.then((data)=>{
-				console.log("======================================")
-				console.log("======================================")
-				console.log("======================================")
-				console.log(data)
-				setTimeout(()=>{
-					callback()
-				}, 100)
-			})
-			.catch((err)=>{
-				console.log(err)
-				callback()
-			})
 }
 
 function saveSublet(sublet){
 	const p = new Promise((resolve, rej)=>{
 		console.log(sublet)
-		insert_facebook_sublets(sublet)
-			.then((result) => {
-				console.log(result)
-				resolve(result)
+		insert_sublet(sublet)
+			.then(() => {
+				console.log('=====>>>>> DONE')
+				resolve()
 			})
 	    .catch((error) => {
-	      console.log(error)
 				rej(error)
 	      // res.status(500).send('Failed to save building info')
 	    })

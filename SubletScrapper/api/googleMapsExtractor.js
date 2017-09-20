@@ -26,6 +26,7 @@ module.exports.parseGPS = function(sublet){
 			  	sublet.gps_x = parseFloat(result.results[0].geometry.location.lat.toFixed(7))
 					sublet.gps_y = parseFloat(result.results[0].geometry.location.lng.toFixed(7))
 					sublet.place_id = result.results[0].place_id
+					sublet.address = result.results[0].formatted_address
 			  	res(sublet);
 			}else{
 				console.log(sublet.address)
