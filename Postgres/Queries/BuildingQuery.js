@@ -23,8 +23,8 @@ exports.get_all_active_buildings = (req, res, next) => {
   const info = req.body
 
   let get_building = `SELECT a.building_id, a.corporation_id, a.building_alias,
-                             a.building_desc, a.building_type, b.building_address,
-                             b.gps_x, b.gps_y,
+                             a.building_desc, a.building_type, a.created_at,
+                             b.building_address, b.gps_x, b.gps_y,
                              c.thumbnail, c.cover_photo, d.imgs, e.min_price
                       FROM building a
                       LEFT OUTER JOIN
