@@ -86,7 +86,6 @@ function parseOnCommonStreetNames(sublet){
     	const parsed_addresses = sublet.description.match(regexMatch)
       if (parsed_addresses) {
         const fullStreet = parsed_addresses[0].match(/\d+/ig)[0] + ' ' + streetname.address
-        console.log(fullStreet)
         sublet.address = fullStreet
         res(sublet)
       }
@@ -151,7 +150,7 @@ module.exports.extractPrice = function(sublet){
 				// Eliminate the $1 posts
 				return x>1
 			})
-			if(filteredParsedPrices){
+			if(filteredParsedPrices.length > 0){
 				price = parseInt(filteredParsedPrices[0].slice(1))
 				for(var pr = 0; pr<filteredParsedPrices.length; pr++){
 					// check if each identified price is lower than the first
@@ -161,16 +160,19 @@ module.exports.extractPrice = function(sublet){
 					}
 				}
 			}else{
-				rej("Could not filter prices, or empty prices")
+				sublet.price = 0
+				res(sublet)
 			}
 			if(price){
 				sublet.price = price
 				res(sublet)
 			}else{
-				rej("Did not find a price")
+				sublet.price = 0
+				res(sublet)
 			}
 		} else {
-			rej("Could not filter prices, or empty prices")
+			sublet.price = 0
+			res(sublet)
 		}
 	})
 	return p
