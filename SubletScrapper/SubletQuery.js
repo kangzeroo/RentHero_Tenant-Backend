@@ -7,6 +7,7 @@ const fbExtractor = require('./api/fbExtractor')
 const get_sublets_from_dynamodb = require('../DynamoDB/dynamodb_api').get_sublets_from_dynamodb
 const getLatestSubletFromDb = require('../DynamoDB/dynamodb_api').getLatestSubletFromDb
 const get_sublet_by_id_from_dynamodb = require('../DynamoDB/dynamodb_api').get_sublet_by_id_from_dynamodb
+const get_sublets_by_place_id = require('../DynamoDB/dynamodb_api').get_sublets_by_place_id
 
 // to run a query we just pass it to the pool
 // after we're done nothing has to be taken care of
@@ -46,9 +47,13 @@ exports.new_sublets = (req, res, next) => {
 	subletParser.parseAndSaveSublets(req.body.newSublets)
 }
 
-exports.get_sublet_by_id = (req, res, next) => {
-  console.log('get_sublet_by_id')
-  get_sublet_by_id_from_dynamodb(req.body.fb_post_id).then((data) => {
+exports.get_matching_sublets = (req, res, next) => {
+  console.log('get_matching_sublets')
+  // get_sublet_by_id_from_dynamodb(req.body.fb_post_id).then((data) => {
+  //   console.log(data)
+  //   return get_sublets_by_place_id(data[0].PLACE_ID)
+  // })
+  get_sublets_by_place_id(req.body.place_id).then((data) => {
     res.json(data)
   }).catch((err) => {
     res.status(err).send(err)

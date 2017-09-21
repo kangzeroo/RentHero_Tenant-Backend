@@ -123,6 +123,34 @@ exports.get_sublet_by_id_from_dynamodb = function(fb_post_id) {
   return p
 }
 
+exports.get_sublets_by_place_id = function(place_id) {
+  console.log('get_sublet_by_place_id')
+  const p = new Promise((res, rej) => {
+    const params = {
+       "TableName": "Rentburrow_Sublets_Historical",
+       "FilterExpression": "#PLACE_ID = :place_id",
+       "ExpressionAttributeNames": {
+         "#PLACE_ID": "PLACE_ID"
+       },
+       "ExpressionAttributeValues": {
+         ":place_id": place_id
+       }
+    }
+    console.log(params)
+    docClient.scan(params, function(err, data) {
+      if (err){
+        console.log(err, err.stack); // an error occurred
+        rej(err)
+      }else{
+        console.log("====== GOT LATEST SUBLETS =====")
+        console.log(data);           // successful response
+        res(data.Items)
+      }
+    })
+  })
+  return p
+}
+
 function unixDateSince(numDays){
   const today = new Date()
   const todayUnix = today.getTime()
