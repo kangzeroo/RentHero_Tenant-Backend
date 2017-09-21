@@ -21,6 +21,7 @@ const log_through = data => {
 
 exports.get_all_active_buildings = (req, res, next) => {
   const info = req.body
+  const values = [info.lat, info.lng]
 
   let get_building = `SELECT a.building_id, a.corporation_id, a.building_alias,
                              a.building_desc, a.building_type, a.created_at,
@@ -29,10 +30,12 @@ exports.get_all_active_buildings = (req, res, next) => {
                              f.min_rooms, f.max_rooms,
                              h.ensuite_bath, i.utils_incl
                       FROM building a
-                      LEFT OUTER JOIN
+                      INNER JOIN
                         (SELECT address_id, gps_x, gps_y,
                                 CONCAT(street_code, ' ', street_name, ', ', city) AS building_address
-                           FROM address) b
+                           FROM address
+                          WHERE ST_DWithin(ST_MakePoint(gps_x::float, gps_y::float), Geography(ST_MakePoint($1, $2)), 2000)
+                         ) b
                         ON a.address_id = b.address_id
                       LEFT OUTER JOIN
                         (SELECT building_id, thumbnail, cover_photo FROM media
@@ -86,7 +89,7 @@ exports.get_all_active_buildings = (req, res, next) => {
   const return_rows = (rows) => {
     res.json(rows)
   }
-  query(get_building)
+  query(get_building, values)
     .then((data) => {
       return stringify_rows(data)
     })
