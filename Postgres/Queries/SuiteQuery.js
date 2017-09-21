@@ -22,11 +22,12 @@ exports.get_available_suites = (req, res, next) => {
   const info = req.body
   const values = [info.building_id]
   let get_suites = `SELECT a.suite_id, a.suite_code, a.suite_alias,
-                               b.min_price, b.max_price, b.available, b.total
+                               b.min_price, b.max_price, b.available, b.total,
+                               c.imgs, d.thumbnail, d.cover_photo
                           FROM (SELECT suite_id, suite_code, suite_alias
                                   FROM suite
                                   WHERE building_id = $1) a
-                          INNER JOIN (
+                          LEFT OUTER JOIN (
                             SELECT suite_id,
                                    MIN(price) AS min_price, MAX(price) AS max_price,
                                    (COUNT(*) - COUNT(CASE WHEN occupied THEN 1 END)) AS available,
@@ -37,6 +38,19 @@ exports.get_available_suites = (req, res, next) => {
                               ORDER BY suite_id
                           ) b
                           ON a.suite_id = b.suite_id
+                          LEFT OUTER JOIN (
+                            SELECT suite_id, array_agg(image_url) AS imgs
+                              FROM images
+                              WHERE building_id = $1
+                              GROUP BY suite_id
+                          ) c
+                          ON a.suite_id = c.suite_id
+                          LEFT OUTER JOIN (
+                            SELECT suite_id, thumbnail, cover_photo
+                              FROM media
+                              WHERE room_id IS NULL
+                          ) d
+                          ON a.suite_id = d.suite_id
                           ORDER BY a.suite_code
                        `
   const return_rows = (rows) => {
