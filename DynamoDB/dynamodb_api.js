@@ -127,7 +127,7 @@ exports.get_sublets_by_place_id = function(place_id) {
   console.log('get_sublet_by_place_id')
   const p = new Promise((res, rej) => {
     const params = {
-       "TableName": "Rentburrow_Sublets_Historical",
+       "TableName": "Rentburrow_Sublets_Operational",
        "FilterExpression": "#PLACE_ID = :place_id",
        "ExpressionAttributeNames": {
          "#PLACE_ID": "PLACE_ID"

@@ -23,7 +23,6 @@ const log_through = data => {
   return data
 }
 
-
 exports.check_latest_sublet = (req, res, next) => {
   getLatestSubletFromDb().then((data) => {
     res.json(data)
