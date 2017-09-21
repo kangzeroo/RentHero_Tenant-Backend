@@ -23,7 +23,7 @@ exports.get_available_suites = (req, res, next) => {
   const values = [info.building_id]
   let get_suites = `SELECT a.suite_id, a.suite_code, a.suite_alias,
                                b.min_price, b.max_price, b.available, b.total,
-                               c.imgs, d.thumbnail, d.cover_photo
+                               c.imgs, d.thumbnail, d.cover_photoato
                           FROM (SELECT suite_id, suite_code, suite_alias
                                   FROM suite
                                   WHERE building_id = $1) a
