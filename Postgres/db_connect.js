@@ -42,6 +42,6 @@ module.exports.query = (text, values, callback) => {
 // the pool also supports checking out a client for
 // multiple operations, such as a transaction
 module.exports.connect = (callback) => {
-  console.log("CONEECTED")
+  console.log("CONNECTED")
   return pool.connect(callback)
 }
