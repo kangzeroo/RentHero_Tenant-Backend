@@ -21,14 +21,12 @@ const log_through = data => {
 
 exports.get_all_active_buildings = (req, res, next) => {
   const info = req.body
-  const values = [info.lat, info.lng]
 
   let get_building = `SELECT a.building_id, a.corporation_id, a.building_alias,
                              a.building_desc, a.building_type, a.created_at,
                              b.building_address, b.gps_x, b.gps_y,
                              c.thumbnail, c.cover_photo, d.imgs, e.min_price,
-                             f.min_rooms, f.max_rooms,
-                             h.ensuite_bath, i.utils_incl
+                             f.min_rooms, f.max_rooms
                       FROM building a
                       INNER JOIN
                         (SELECT address_id, gps_x, gps_y,
@@ -63,32 +61,12 @@ exports.get_all_active_buildings = (req, res, next) => {
                             ON au.suite_id = bu.suite_id
                             GROUP BY au.building_id) f
                        ON a.building_id = f.building_id
-                       LEFT OUTER JOIN
-                          (SELECT amen.building_id, bmen.ensuite_bath
-                             FROM building amen
-                           LEFT OUTER JOIN
-                              (SELECT DISTINCT building_id, True AS ensuite_bath
-                                 FROM amenities
-                                 WHERE amenity_alias = 'Ensuite Bathroom') bmen
-                           ON amen.building_id = bmen.building_id
-                         ) h
-                       ON a.building_id = h.building_id
-                       LEFT OUTER JOIN
-                           (SELECT DISTINCT amen2.building_id, bmen2.utils_incl
-                              FROM building amen2
-                            LEFT OUTER JOIN
-                               (SELECT building_id, True AS utils_incl
-                                  FROM amenities
-                                  WHERE amenity_class = 'free_utils') bmen2
-                            ON amen2.building_id = bmen2.building_id
-                          ) i
-                        ON a.building_id = i.building_id
                       `
 
   const return_rows = (rows) => {
     res.json(rows)
   }
-  query(get_building, values)
+  query(get_building)
     .then((data) => {
       return stringify_rows(data)
     })
