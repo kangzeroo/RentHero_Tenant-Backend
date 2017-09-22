@@ -34,6 +34,90 @@ exports.get_all_active_buildings = (req, res, next) => {
                         (SELECT address_id, gps_x, gps_y,
                                 CONCAT(street_code, ' ', street_name, ', ', city) AS building_address
                            FROM address
+                         ) b
+                        ON a.address_id = b.address_id
+                      LEFT OUTER JOIN
+                        (SELECT building_id, thumbnail, cover_photo FROM media
+                          WHERE suite_id IS NULL
+                            AND room_id IS NULL) c
+                        ON a.building_id = c.building_id
+                      LEFT OUTER JOIN
+                        (SELECT building_id, array_agg(image_url ORDER BY position) AS imgs
+                          FROM images
+                          WHERE suite_id IS NULL
+                            AND room_id IS NULL
+                          GROUP BY building_id
+                        ) d
+                      ON a.building_id = d.building_id
+                      LEFT OUTER JOIN
+                        (SELECT building_id, MIN(price) AS min_price FROM room
+                         GROUP BY building_id) e
+                      ON a.building_id = e.building_id
+                      LEFT OUTER JOIN
+                        (SELECT au.building_id, MIN(bu.room_count) AS min_rooms, MAX(bu.room_count) AS max_rooms
+                           FROM suite au
+                           INNER JOIN
+                           (SELECT suite_id, COUNT(*) AS room_count
+                              FROM room
+                              GROUP BY suite_id) bu
+                            ON au.suite_id = bu.suite_id
+                            GROUP BY au.building_id) f
+                       ON a.building_id = f.building_id
+                       LEFT OUTER JOIN
+                          (SELECT amen.building_id, bmen.ensuite_bath
+                             FROM building amen
+                           LEFT OUTER JOIN
+                              (SELECT DISTINCT building_id, True AS ensuite_bath
+                                 FROM amenities
+                                 WHERE amenity_alias = 'Ensuite Bathroom') bmen
+                           ON amen.building_id = bmen.building_id
+                         ) h
+                       ON a.building_id = h.building_id
+                       LEFT OUTER JOIN
+                           (SELECT DISTINCT amen2.building_id, bmen2.utils_incl
+                              FROM building amen2
+                            LEFT OUTER JOIN
+                               (SELECT building_id, True AS utils_incl
+                                  FROM amenities
+                                  WHERE amenity_class = 'free_utils') bmen2
+                            ON amen2.building_id = bmen2.building_id
+                          ) i
+                        ON a.building_id = i.building_id
+                      `
+
+  const return_rows = (rows) => {
+    res.json(rows)
+  }
+  query(get_building, values)
+    .then((data) => {
+      return stringify_rows(data)
+    })
+    .then((data) => {
+      return log_through(data)
+    })
+    .then((data) => {
+      return return_rows(data)
+    })
+    .catch((error) => {
+        res.status(500).send('Failed to get buildings info')
+    })
+}
+
+exports.get_all_active_buildings_geo = (req, res, next) => {
+  const info = req.body
+  const values = [info.lat, info.lng]
+
+  let get_building = `SELECT a.building_id, a.corporation_id, a.building_alias,
+                             a.building_desc, a.building_type, a.created_at,
+                             b.building_address, b.gps_x, b.gps_y,
+                             c.thumbnail, c.cover_photo, d.imgs, e.min_price,
+                             f.min_rooms, f.max_rooms,
+                             h.ensuite_bath, i.utils_incl
+                      FROM building a
+                      INNER JOIN
+                        (SELECT address_id, gps_x, gps_y,
+                                CONCAT(street_code, ' ', street_name, ', ', city) AS building_address
+                           FROM address
                           WHERE ST_DWithin(ST_MakePoint(gps_x::float, gps_y::float), Geography(ST_MakePoint($1, $2)), 2000)
                          ) b
                         ON a.address_id = b.address_id
