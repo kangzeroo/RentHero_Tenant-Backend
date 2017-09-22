@@ -43,9 +43,9 @@ if (process.env.NODE_ENV === 'production') {
 } else {
   // instantiate the SSL certificate necessary for HTTPS
   const options = {
-      // ca: fs.readFileSync('./credentials/server.ca-bundle'),
-      key: fs.readFileSync('./credentials/server.key'),
-      cert: fs.readFileSync('./credentials/server.crt'),
+      // ca: fs.readFileSync('./credentials/rentburrow_com.ca-bundle'),
+      key: fs.readFileSync('./credentials/rentburrow_com.key'),
+      cert: fs.readFileSync('./credentials/rentburrow_com.crt'),
       requestCert: false,
       rejectUnauthorized: false
   }

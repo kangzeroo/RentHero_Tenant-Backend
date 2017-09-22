@@ -7,21 +7,22 @@ exports.authtest = function(req, res, next){
 }
 
 exports.longlivetoken = function(req, res, next){
-  console.log('========= longlivetoken =========')
-  console.log(req.body)
 	const fbAccessToken = req.body.accessToken
-	console.log(fbAccessToken)
-	axios.get(`https://graph.facebook.com/oauth/access_token?grant_type=fb_exchange_token&client_id=${"115765432474914"}&client_secret=${"61eeb4de2ccf4180cec67f86ba9a0e45"}&fb_exchange_token=${fbAccessToken}` )
+	CLIENT_ID = '115765432474914'
+	CLIENT_SECRET = '61eeb4de2ccf4180cec67f86ba9a0e45'
+	if (process.env.NODE_ENV = 'production') {
+		// production
+		let CLIENT_ID = '1492022030811505'
+		let CLIENT_SECRET = 'ab7ff18d40625c64f6a12516f5be8de2'
+	}
+	axios.get(`https://graph.facebook.com/oauth/access_token?grant_type=fb_exchange_token&client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}&fb_exchange_token=${fbAccessToken}` )
 		.then((data)=>{
-			console.log("================================ FB TOKEN START ================================")
-      console.log(data.data)
 			// let longLiveToken = data.data.slice(13) 	// remove the 'access_token=' from beggining
 			// let positionEnd = longLiveToken.indexOf('&expires=')
 			// longLiveToken = longLiveToken.slice(0, positionEnd)
       const longLiveToken = data.data.access_token
 			const tokenExpiry = data.data.expires_in
-			console.log(data.data)
-			console.log("================================ FB TOKEN END ================================")
+			console.log("================================ FB TOKEN SUCCESS ================================")
 			res.json({
 				message: "Success getting the long lived fb token!",
 				longLiveToken: data.data
