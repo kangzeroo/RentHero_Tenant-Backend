@@ -23,6 +23,7 @@ module.exports = function(app){
 
 	// search routes
 	app.post('/get_all_active_buildings', json_encoding, BuildingQuery.get_all_active_buildings)
+	app.post('/get_all_active_buildings_geo', json_encoding, BuildingQuery.get_all_active_buildings_geo)
 	app.post('/get_specific_building', json_encoding, BuildingQuery.get_specific_building)
 	app.post('/get_specific_building_by_alias', json_encoding, BuildingQuery.get_specific_building_by_alias)
 	app.post('/get_building_by_place_id', json_encoding, BuildingQuery.get_building_by_place_id)
