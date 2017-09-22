@@ -57,7 +57,8 @@ exports.get_sublets_from_dynamodb = function() {
        },
        "ExpressionAttributeValues": {
          ":timeSince": timeSince
-       }
+       },
+       "Limit": 300,
     }
     console.log(params)
     docClient.scan(params, function(err, data) {
