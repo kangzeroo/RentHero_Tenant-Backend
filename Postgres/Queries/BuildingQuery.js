@@ -232,11 +232,12 @@ exports.get_specific_building = (req, res, next) => {
 exports.get_specific_building_by_alias = (req, res, next) => {
   const info = req.body
   const values = [info.building_alias]
+
   let get_building =  `SELECT a.building_id, a.corporation_id, a.building_alias,
                              a.building_desc, a.building_type, b.building_address,
                              b.gps_x, b.gps_y, b.place_id,
                              c.thumbnail, c.cover_photo, c.istaging_url, d.imgs
-                      FROM (SELECT * FROM building WHERE building_alias = $1) a
+                      FROM (SELECT * FROM building WHERE lower(building_alias) = $1) a
                       INNER JOIN
                         (SELECT address_id, CONCAT(street_code, ' ', street_name, ', ', city) AS building_address,
                                 gps_x, gps_y, place_id
