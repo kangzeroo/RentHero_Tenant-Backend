@@ -4,6 +4,7 @@ const Test = require('./routes/test_routes')
 const BuildingQuery = require('./Postgres/Queries/BuildingQuery')
 const SuiteQuery = require('./Postgres/Queries/SuiteQuery')
 const RoomQuery = require('./Postgres/Queries/RoomQuery')
+const TenantQuery = require('./Postgres/Queries/TenantQuery')
 const FilterQueries = require('./Postgres/Queries/FilterQueries')
 const SubletQuery = require('./SubletScrapper/SubletQuery')
 const Authentication = require('./SubletScrapper/FacebookToken')
@@ -49,5 +50,8 @@ module.exports = function(app){
 	app.post('/get_sublets', json_encoding, SubletQuery.get_sublets)
 	app.post('/new_sublets', json_encoding, SubletQuery.new_sublets)
 	app.post('/get_matching_sublets', json_encoding, SubletQuery.get_matching_sublets)
-	app.post('/longlivetoken', json_encoding, Authentication.longlivetoken);
+	app.post('/longlivetoken', json_encoding, Authentication.longlivetoken)
+
+	// Tenant routes
+	app.post('/insert_user', json_encoding, TenantQuery.insert_user)
 }
