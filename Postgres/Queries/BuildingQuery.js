@@ -311,6 +311,46 @@ exports.get_building_by_place_id = (req, res, next) => {
     })
 }
 
+exports.get_building_by_address = (req, res, next) => {
+  const info = req.body
+  console.log(info)
+  const values = [info.street_code, info.street_name, info.city, info.province, info.country, info.postal_code]
+
+  let get_building =  `SELECT a.building_id, a.corporation_id, a.building_alias,
+                             a.building_desc, a.building_type, b.building_address,
+                             b.gps_x, b.gps_y, b.place_id
+                      FROM
+                        (SELECT address_id, CONCAT(street_code, ' ', street_name, ', ', city) AS building_address,
+                                gps_x, gps_y, place_id
+                        FROM address
+                        WHERE street_code = $1
+                          AND street_name = $2
+                          AND city = $3
+                          AND province = $4
+                          AND country = $5
+                          AND postal_code = $6) b
+                      INNER JOIN
+                        building a
+                      ON a.address_id = b.address_id
+                      `
+  const return_rows = (rows) => {
+    res.json(rows)
+  }
+  query(get_building, values)
+    .then((data) => {
+      return stringify_rows(data)
+    })
+    .then((data) => {
+      return log_through(data)
+    })
+    .then((data) => {
+      return return_rows(data)
+    })
+    .catch((error) => {
+        res.status(500).send('Failed to get property info')
+    })
+}
+
 exports.get_images_for_specific_building = (req, res, next) => {
   const info = req.body
   const values = [info.building_id]

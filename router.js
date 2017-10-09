@@ -28,6 +28,7 @@ module.exports = function(app){
 	app.post('/get_specific_building', json_encoding, BuildingQuery.get_specific_building)
 	app.post('/get_specific_building_by_alias', json_encoding, BuildingQuery.get_specific_building_by_alias)
 	app.post('/get_building_by_place_id', json_encoding, BuildingQuery.get_building_by_place_id)
+	app.post('/get_building_by_address', json_encoding, BuildingQuery.get_building_by_address)
 	app.post('/get_images_for_specific_building', json_encoding, BuildingQuery.get_images_for_specific_building)
 	app.post('/get_amenities_for_specific_building', json_encoding, BuildingQuery.get_amenities_for_specific_building)
 
@@ -50,6 +51,7 @@ module.exports = function(app){
 	app.post('/get_sublets', json_encoding, SubletQuery.get_sublets)
 	app.post('/new_sublets', json_encoding, SubletQuery.new_sublets)
 	app.post('/get_matching_sublets', json_encoding, SubletQuery.get_matching_sublets)
+	app.post('/get_matching_sublets_by_address', json_encoding, SubletQuery.get_matching_sublets_by_address)
 	app.post('/longlivetoken', json_encoding, Authentication.longlivetoken)
 
 	// Tenant routes
