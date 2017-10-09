@@ -61,6 +61,7 @@ exports.get_all_active_buildings = (req, res, next) => {
                             ON au.suite_id = bu.suite_id
                             GROUP BY au.building_id) f
                        ON a.building_id = f.building_id
+                       ORDER BY RAND()
                       `
 
   const return_rows = (rows) => {
