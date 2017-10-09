@@ -181,6 +181,34 @@ exports.get_sublets_by_place_id = function(place_id) {
   return p
 }
 
+exports.get_sublets_by_address = function(address) {
+  console.log('get_sublet_by_address')
+  const p = new Promise((res, rej) => {
+    const params = {
+       "TableName": "Rentburrow_Sublets_Operational",
+       "FilterExpression": "#ADDRESS = :address",
+       "ExpressionAttributeNames": {
+         "#ADDRESS": "ADDRESS"
+       },
+       "ExpressionAttributeValues": {
+         ":address": address
+       }
+    }
+    console.log(params)
+    docClient.scan(params, function(err, data) {
+      if (err){
+        console.log(err, err.stack); // an error occurred
+        rej(err)
+      }else{
+        console.log("====== GOT LATEST SUBLETS =====")
+        console.log(data);           // successful response
+        res(data.Items)
+      }
+    })
+  })
+  return p
+}
+
 function unixDateSince(numDays){
   const today = new Date()
   const todayUnix = today.getTime()

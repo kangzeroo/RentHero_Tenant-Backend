@@ -58,3 +58,16 @@ exports.get_matching_sublets = (req, res, next) => {
     res.status(err).send(err)
   })
 }
+
+exports.get_matching_sublets_by_address = (req, res, next) => {
+  console.log('get_matching_sublets_by_address')
+  // get_sublet_by_id_from_dynamodb(req.body.fb_post_id).then((data) => {
+  //   console.log(data)
+  //   return get_sublets_by_place_id(data[0].PLACE_ID)
+  // })
+  get_sublets_by_address(req.body.address).then((data) => {
+    res.json(data)
+  }).catch((err) => {
+    res.status(err).send(err)
+  })
+}
