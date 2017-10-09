@@ -32,6 +32,35 @@ exports.insert_sublet = function(sublet_item){
   return p
 }
 
+// needs to be tested, should work as its the same code as the working 'Tenant-Intel-Backend' repo
+exports.batch_insert_sublets = function(sublets){
+  const p = new Promise((res, rej) => {
+    if (sublets.length > 0) {
+      const params = {
+        RequestItems: {
+          [sublets[0].TableName]: sublets.map((sublet) => {
+            return {
+              PutRequest: {
+                Item: sublet.Item
+              }
+            }
+          })
+        }
+      }
+      docClient.batchWriteItem(params, function(err, data) {
+        if (err){
+            console.log(JSON.stringify(err, null, 2));
+            rej()
+        }else{
+            console.log('SUBLET BATCH INSERTION SUCCESS!')
+            res()
+        }
+      })
+    }
+  })
+  return p
+}
+
 exports.get_sublets_from_dynamodb = function() {
   const p = new Promise((res, rej) => {
     const timeSince = unixDateSince(100)
