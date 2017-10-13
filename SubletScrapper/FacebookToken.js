@@ -10,7 +10,7 @@ exports.longlivetoken = function(req, res, next){
 	const fbAccessToken = req.body.accessToken
 	CLIENT_ID = '115765432474914'
 	CLIENT_SECRET = '61eeb4de2ccf4180cec67f86ba9a0e45'
-	if (process.env.NODE_ENV = 'production') {
+	if (process.env.NODE_ENV === 'production') {
 		// production
 		let CLIENT_ID = '1492022030811505'
 		let CLIENT_SECRET = 'ab7ff18d40625c64f6a12516f5be8de2'
