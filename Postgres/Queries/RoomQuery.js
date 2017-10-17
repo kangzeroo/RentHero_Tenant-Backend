@@ -12,12 +12,7 @@ const query = promisify(pool.query)
 // stringify_rows: Convert each row into a string
 const stringify_rows = res => res.rows.map(row => JSON.stringify(row))
 
-//log_through: log each row
-const log_through = data => {
-  // console.log(data)
-  return data
-}
-
+const json_rows = res => res.map(row => JSON.parse(row))
 
 exports.get_room_page = (req, res, next) => {
   const info = req.body
@@ -51,7 +46,7 @@ exports.get_room_page = (req, res, next) => {
       return stringify_rows(data)
     })
     .then((data) => {
-      return log_through(data)
+      return json_rows(data)
     })
     .then((data) => {
       return return_rows(data)
@@ -79,7 +74,7 @@ exports.get_room_amenities = (req, res, next) => {
       return stringify_rows(data)
     })
     .then((data) => {
-      return log_through(data)
+      return json_rows(data)
     })
     .then((data) => {
       return return_rows(data)

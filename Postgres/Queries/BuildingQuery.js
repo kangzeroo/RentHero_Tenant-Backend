@@ -12,6 +12,7 @@ const query = promisify(pool.query)
 // stringify_rows: Convert each row into a string
 const stringify_rows = res => res.rows.map(row => JSON.stringify(row))
 
+const json_rows = res => res.map(row => JSON.parse(row))
 //log_through: log each row
 const log_through = data => {
   // console.log(data)
@@ -72,7 +73,8 @@ exports.get_all_active_buildings = (req, res, next) => {
       return stringify_rows(data)
     })
     .then((data) => {
-      return log_through(data)
+      return json_rows(data)
+
     })
     .then((data) => {
       return return_rows(data)
@@ -157,7 +159,8 @@ exports.get_all_active_buildings_geo = (req, res, next) => {
       return stringify_rows(data)
     })
     .then((data) => {
-      return log_through(data)
+      return json_rows(data)
+
     })
     .then((data) => {
       return return_rows(data)
@@ -182,7 +185,8 @@ exports.get_specific_landlord = (req, res, next) => {
       return stringify_rows(data)
     })
     .then((data) => {
-      return log_through(data)
+      return json_rows(data)
+
     })
     .then((data) => {
       return return_rows(data)
@@ -220,7 +224,8 @@ exports.get_specific_building = (req, res, next) => {
       return stringify_rows(data)
     })
     .then((data) => {
-      return log_through(data)
+      return json_rows(data)
+
     })
     .then((data) => {
       return return_rows(data)
@@ -268,7 +273,8 @@ exports.get_specific_building_by_alias = (req, res, next) => {
       return stringify_rows(data)
     })
     .then((data) => {
-      return log_through(data)
+      return json_rows(data)
+
     })
     .then((data) => {
       return return_rows(data)
@@ -301,7 +307,8 @@ exports.get_building_by_place_id = (req, res, next) => {
       return stringify_rows(data)
     })
     .then((data) => {
-      return log_through(data)
+      return json_rows(data)
+
     })
     .then((data) => {
       return return_rows(data)
@@ -341,7 +348,8 @@ exports.get_building_by_address = (req, res, next) => {
       return stringify_rows(data)
     })
     .then((data) => {
-      return log_through(data)
+      return json_rows(data)
+
     })
     .then((data) => {
       return return_rows(data)
@@ -368,7 +376,8 @@ exports.get_images_for_specific_building = (req, res, next) => {
       return stringify_rows(data)
     })
     .then((data) => {
-      return log_through(data)
+      return json_rows(data)
+
     })
     .then((data) => {
       return return_rows(data)
@@ -403,7 +412,8 @@ exports.get_amenities_for_specific_building = (req, res, next) => {
       return stringify_rows(data)
     })
     .then((data) => {
-      return log_through(data)
+      return json_rows(data)
+
     })
     .then((data) => {
       return return_rows(data)
