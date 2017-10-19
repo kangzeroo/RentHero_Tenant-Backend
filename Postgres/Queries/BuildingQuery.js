@@ -201,7 +201,7 @@ exports.get_specific_building = (req, res, next) => {
   const values = [info.building_id]
   let get_building =  `SELECT a.building_id, a.corporation_id, a.building_alias,
                              a.building_desc, a.building_type, b.building_address,
-                             b.gps_x, b.gps_y, b.istaging_url,
+                             b.gps_x, b.gps_y, c.istaging_url,
                              c.thumbnail, c.cover_photo
                       FROM (SELECT * FROM building WHERE building_id = $1) a
                       INNER JOIN
