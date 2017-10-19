@@ -19,10 +19,10 @@ exports.get_available_suites = (req, res, next) => {
   const info = req.body
   const values = [info.building_id]
 
-  let get_suites = `SELECT a.suite_id, a.suite_code, a.suite_alias,
+  let get_suites = `SELECT a.suite_id, a.suite_code, a.suite_alias, a.suite_style_id,
                                b.min_price, b.max_price, b.available, b.total,
                                c.imgs, d.thumbnail, d.cover_photo
-                          FROM (SELECT DISTINCT ON (suite_alias) suite_id, suite_code, suite_alias
+                          FROM (SELECT DISTINCT ON (suite_alias) suite_id, suite_code, suite_alias, suite_style_id
                                   FROM suite
                                   WHERE building_id = $1
                                   ORDER BY suite_alias) a
