@@ -172,13 +172,14 @@ exports.get_all_active_buildings_geo = (req, res, next) => {
 
 exports.get_specific_landlord = (req, res, next) => {
   const info = req.body
-  const values = [info.corporation_id]
-  let get_landlord = `SELECT *
-                      FROM corporation
-                      WHERE corporation_id=$1
+  const values = [info.building_id]
+  let get_landlord = `SELECT a.corporation_id, b.corporation_name, b.email, b.phone, b.thumbnail
+                      FROM building a
+                      INNER JOIN corporation b ON a.corporation_id = b.corporation_id
+                      WHERE building_id=$1
                       `
   const return_rows = (rows) => {
-    res.json(rows)
+    res.json(rows[0])
   }
   query(get_landlord, values)
     .then((data) => {
@@ -204,6 +205,7 @@ exports.get_specific_building = (req, res, next) => {
                              b.gps_x, b.gps_y, c.istaging_url,
                              c.thumbnail, c.cover_photo
                       FROM (SELECT * FROM building WHERE building_id = $1) a
+
                       INNER JOIN
                         (SELECT address_id, CONCAT(street_code, ' ', street_name, ', ', city) AS building_address,
                                 gps_x, gps_y
