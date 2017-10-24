@@ -70,6 +70,31 @@ exports.get_available_suites = (req, res, next) => {
     })
 }
 
+exports.get_suite_imgs = (req, res, next) => {
+  const info = req.body
+  const values = [info.suite_id]
+
+  const get_imgs = `SELECT json_agg(image_url) AS imgs FROM images WHERE suite_id=$1`
+
+  const return_rows = (rows) => {
+    res.json(rows[0])
+  }
+
+  query(get_imgs, values)
+    .then((data) => {
+      return stringify_rows(data)
+    })
+    .then((data) => {
+      return json_rows(data)
+    })
+    .then((data) => {
+      return return_rows(data)
+    })
+    .catch((error) => {
+        res.status(500).send('Failed to get property info')
+    })
+}
+
 exports.get_amenities_for_suite = (req, res, next) => {
   console.log('get_amenities_for_suite')
   const info = req.body

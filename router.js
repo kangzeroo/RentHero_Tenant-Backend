@@ -41,6 +41,7 @@ module.exports = function(app){
 	app.post('/get_available_suites', json_encoding, SuiteQuery.get_available_suites)
 	app.post('/get_amenities_for_suite', json_encoding, SuiteQuery.get_amenities_for_suite)
 	app.post('/get_all_rooms_for_suite', json_encoding, SuiteQuery.get_all_rooms_for_suite)
+	app.post('/get_suite_imgs', json_encoding, SuiteQuery.get_suite_imgs)
 
 	// filter buidlings queries
 	app.post('/filter_buildings', json_encoding, FilterQueries.filter_buildings)
