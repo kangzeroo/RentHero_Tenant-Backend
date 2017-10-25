@@ -390,6 +390,57 @@ exports.get_images_for_specific_building = (req, res, next) => {
     })
 }
 
+exports.get_all_images_size_for_specific_building = (req, res, next) => {
+  const info = req.body
+  const values = [info.building_id]
+  let get_images =  `SELECT count(*) AS image_count FROM images
+                        WHERE building_id = $1
+                      `
+  const return_rows = (rows) => {
+    res.json(rows[0])
+  }
+  query(get_images, values)
+    .then((data) => {
+      return stringify_rows(data)
+    })
+    .then((data) => {
+      return json_rows(data)
+
+    })
+    .then((data) => {
+      return return_rows(data)
+    })
+    .catch((error) => {
+        res.status(500).send('Failed to get property info')
+    })
+}
+
+exports.get_num_virtual_tours = (req, res, next) => {
+  const info = req.body
+  const values = [info.building_id]
+  let get_images =  `SELECT COUNT(*) AS vr_tour_count FROM suite WHERE suite_style_id IN (SELECT DISTINCT suite_style_id FROM suite WHERE building_id = $1)
+                      `
+
+  const return_rows = (rows) => {
+    res.json(rows[0])
+  }
+  query(get_images, values)
+    .then((data) => {
+      return stringify_rows(data)
+    })
+    .then((data) => {
+      return json_rows(data)
+
+    })
+    .then((data) => {
+      return return_rows(data)
+    })
+    .catch((error) => {
+        res.status(500).send('Failed to get property info')
+    })
+}
+
+
 exports.get_amenities_for_specific_building = (req, res, next) => {
   const info = req.body
   const values = [info.building_id]
