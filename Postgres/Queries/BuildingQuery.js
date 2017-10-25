@@ -149,6 +149,7 @@ exports.get_all_active_buildings_geo = (req, res, next) => {
                             ON amen2.building_id = bmen2.building_id
                           ) i
                         ON a.building_id = i.building_id
+                        INNER JOIN (SELECT * FROM building_details WHERE active=true) j ON a.building_id = j.building_id
                       `
 
   const return_rows = (rows) => {
