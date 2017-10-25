@@ -93,7 +93,7 @@ exports.get_all_active_buildings_geo = (req, res, next) => {
                              b.building_address, b.gps_x, b.gps_y,
                              c.thumbnail, c.cover_photo, d.imgs, e.min_price,
                              f.min_rooms, f.max_rooms,
-                             h.ensuite_bath, i.utils_incl
+                             h.ensuite_bath, i.utils_incl, j.label
                       FROM building a
                       INNER JOIN
                         (SELECT address_id, gps_x, gps_y,
