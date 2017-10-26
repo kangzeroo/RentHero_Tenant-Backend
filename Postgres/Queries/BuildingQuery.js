@@ -420,7 +420,7 @@ exports.get_all_images_size_for_specific_building = (req, res, next) => {
 exports.get_num_virtual_tours = (req, res, next) => {
   const info = req.body
   const values = [info.building_id]
-  let get_images =  `SELECT COUNT(*) AS vr_tour_count FROM suite WHERE suite_style_id IN (SELECT DISTINCT suite_style_id FROM suite WHERE building_id = $1)
+  let get_images =  `SELECT COUNT(*) AS vr_tour_count FROM media WHERE istaging_url IS NOT NULL AND room_id IS NULL AND building_id = $1
                       `
 
   const return_rows = (rows) => {
