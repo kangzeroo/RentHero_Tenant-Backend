@@ -24,7 +24,8 @@ const log_through = data => {
 }
 
 exports.check_latest_sublet = (req, res, next) => {
-  getLatestSubletFromDb().then((data) => {
+  console.log(`GROUP ID = ${typeof req.body.groupid} ${req.body.groupid}`)
+  getLatestSubletFromDb(req.body.groupid).then((data) => {
     res.json(data)
   }).catch((err) => {
     res.status(err).send(err)
