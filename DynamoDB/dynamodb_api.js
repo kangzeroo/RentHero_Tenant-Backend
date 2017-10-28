@@ -89,7 +89,7 @@ exports.get_sublets_from_dynamodb = function() {
        },
        "Limit": 300,
     }
-    console.log(params)
+    // console.log(params)
     docClient.scan(params, function(err, data) {
       if (err){
         console.log(err, err.stack); // an error occurred
@@ -104,21 +104,31 @@ exports.get_sublets_from_dynamodb = function() {
   return p
 }
 
-exports.getLatestSubletFromDb = function() {
+exports.getLatestSubletFromDb = function(fb_group_id) {
   const p = new Promise((res, rej) => {
+    console.log(fb_group_id)
     const params = {
        "TableName": "Rentburrow_Sublets_Historical",
-       "Limit": 1,
+       "FilterExpression": "#FB_GROUP_ID = :fb_group_id",
+       "ExpressionAttributeNames": {
+         "#FB_GROUP_ID": "FB_GROUP_ID"
+       },
+       "ExpressionAttributeValues": {
+         ":fb_group_id": fb_group_id
+       },
+      //  "Limit": 1,
     }
-    console.log(params)
+    // console.log(params)
     docClient.scan(params, function(err, data) {
       if (err){
         console.log(err, err.stack); // an error occurred
         rej(err)
       }else{
         console.log("====== GOT LATEST SUBLET =====")
-        console.log(data);           // successful response
-        res(data.Items)
+        // console.log(data);           // successful response
+        res(data.Items.sort((a, b) => {
+          return b.POSTED_DATE - a.POSTED_DATE
+        })[0])
       }
     })
   })
@@ -138,14 +148,14 @@ exports.get_sublet_by_id_from_dynamodb = function(fb_post_id) {
          ":fb_post_id": fb_post_id
        }
     }
-    console.log(params)
+    // console.log(params)
     docClient.scan(params, function(err, data) {
       if (err){
         console.log(err, err.stack); // an error occurred
         rej(err)
       }else{
         console.log("====== GOT LATEST SUBLET =====")
-        console.log(data);           // successful response
+        // console.log(data);           // successful response
         res(data.Items)
       }
     })
@@ -166,14 +176,14 @@ exports.get_sublets_by_place_id = function(place_id) {
          ":place_id": place_id
        }
     }
-    console.log(params)
+    // console.log(params)
     docClient.scan(params, function(err, data) {
       if (err){
         console.log(err, err.stack); // an error occurred
         rej(err)
       }else{
         console.log("====== GOT LATEST SUBLETS =====")
-        console.log(data);           // successful response
+        // console.log(data);           // successful response
         res(data.Items)
       }
     })
@@ -194,14 +204,14 @@ exports.get_sublets_by_address = function(address) {
          ":address": address
        }
     }
-    console.log(params)
+    // console.log(params)
     docClient.scan(params, function(err, data) {
       if (err){
         console.log(err, err.stack); // an error occurred
         rej(err)
       }else{
         console.log("====== GOT LATEST SUBLETS =====")
-        console.log(data);           // successful response
+        // console.log(data);           // successful response
         res(data.Items)
       }
     })

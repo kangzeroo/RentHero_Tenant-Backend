@@ -34,7 +34,6 @@ exports.longlivetoken = function(req, res, next){
 				message: "Failure getting the long lived fb token!"
 			})
 		})
-
 }
 
 // POST/ checkIfLandlordExists

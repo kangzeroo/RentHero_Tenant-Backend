@@ -3,7 +3,7 @@ const GoogleMapsAPI = require('googlemaps')
 module.exports.parseGPS = function(sublet){
 	const p = new Promise((res, rej)=>{
 		const publicConfig = {
-		  key: 'AIzaSyA1NTulhRf2hKBV-BEbBLW8NRD7AnpqvMg',
+		  key: 'AIzaSyBuNFgfieL6-BsXX8aJoxhhaEcoNBVDAC8',
 		  stagger_time:       1000, // for elevationPath
 		  encode_polylines:   false,
 		  secure:             true // use https
