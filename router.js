@@ -8,6 +8,7 @@ const TenantQuery = require('./Postgres/Queries/TenantQuery')
 const FilterQueries = require('./Postgres/Queries/FilterQueries')
 const SubletQuery = require('./SubletScrapper/SubletQuery')
 const Authentication = require('./SubletScrapper/FacebookToken')
+const RequestQuery = require('./Postgres/Queries/RequestQuery')
 
 // bodyParser attempts to parse any request into JSON format
 const json_encoding = bodyParser.json({
@@ -61,4 +62,7 @@ module.exports = function(app){
 
 	// Tenant routes
 	app.post('/insert_user', json_encoding, TenantQuery.insert_user)
+
+	// Requests routes
+	app.post('/submit_request', json_encoding, RequestQuery.submit_request)
 }
