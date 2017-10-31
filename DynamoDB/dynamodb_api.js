@@ -63,7 +63,7 @@ exports.batch_insert_sublets = function(sublets){
 
 exports.get_sublets_from_dynamodb = function() {
   const p = new Promise((res, rej) => {
-    const timeSince = unixDateSince(100)
+    const timeSince = unixDateSince(30)
     // const params = {
     //   TableName: "Rentburrow_Sublets_Operational",
     //   KeyConditionExpression: "#PLACE_ID > :ANYTHING",
