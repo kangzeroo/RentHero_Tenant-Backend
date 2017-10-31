@@ -40,7 +40,6 @@ function parseSubletForInfo(sublet, callback){
 
 function saveSublet(sublet){
 	const p = new Promise((resolve, rej)=>{
-		console.log(sublet)
 		insert_sublet(sublet)
 			.then(() => {
 				console.log('=====>>>>> DONE')
