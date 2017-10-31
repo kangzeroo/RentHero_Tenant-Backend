@@ -16,10 +16,8 @@ module.exports.parseGPS = function(sublet){
 		  "address":    sublet.address,
 		  "components": "components=country:CA"
 		}
-
 		gmAPI.geocode(geocodeParams, function(err, result){
-		  if(err){console.log(err)};
-		   //console.log(result);
+		  if(err){console.log(err)}
 		  if(result){
 		  	if(result.results[0]){
 			  	// take the coords of the first result
@@ -27,12 +25,12 @@ module.exports.parseGPS = function(sublet){
 					sublet.gps_y = parseFloat(result.results[0].geometry.location.lng.toFixed(7))
 					sublet.place_id = result.results[0].place_id
 					sublet.address = result.results[0].formatted_address
-			  	res(sublet);
+			  	res(sublet)
+				}
 			}else{
 				console.log(sublet.address)
 				console.log(result)
-		  	rej("No geocoding data!");
-			}
+		  	rej("No geocoding data!")
 		  }
 		})
 	})
