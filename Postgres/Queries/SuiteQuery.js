@@ -145,7 +145,7 @@ exports.get_suite_page = (req, res, next) => {
   const info = req.body
   const values = [info.building_id, info.suite_id]
   let get_suites = `SELECT a.suite_id, a.suite_code, a.suite_alias, a.suite_desc,
-                           b.cover_photo, b.thumbnail, b.istaging_url, b.iguide_url,
+                           b.cover_photo, b.thumbnail, b.istaging_url, b.iguide_url, b.video_url,
                            c.imgs
                       FROM (SELECT * FROM suite
                              WHERE building_id = $1
