@@ -246,7 +246,7 @@ exports.get_specific_building_by_alias = (req, res, next) => {
   let get_building =  `SELECT a.building_id, a.corporation_id, a.building_alias,
                              a.building_desc, a.building_type, b.building_address,
                              b.gps_x, b.gps_y, b.place_id,
-                             c.thumbnail, c.cover_photo, c.istaging_url, d.imgs, e.label
+                             c.thumbnail, c.cover_photo, c.istaging_url, c.iguide_url, c.video_url, d.imgs, e.label
                       FROM (SELECT * FROM building WHERE lower(building_alias) = $1) a
                       INNER JOIN
                         (SELECT address_id, CONCAT(street_code, ' ', street_name, ', ', city) AS building_address,
@@ -254,7 +254,7 @@ exports.get_specific_building_by_alias = (req, res, next) => {
                         FROM address) b
                         ON a.address_id = b.address_id
                       INNER JOIN
-                        (SELECT building_id, thumbnail, cover_photo, istaging_url
+                        (SELECT building_id, thumbnail, cover_photo, istaging_url, iguide_url, video_url
                            FROM media
                           WHERE building_id IS NOT NULL
                             AND suite_id IS NULL
