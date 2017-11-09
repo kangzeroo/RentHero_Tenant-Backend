@@ -55,3 +55,10 @@ if (process.env.NODE_ENV === 'production') {
     console.log("Server listening on https: ", port)
   })
 }
+
+// else if (process.env.NODE_ENV === 'http') {
+//
+//   const server = http.createServer(app)
+//   // listen to the server on port
+//   server.listen(port)
+// }

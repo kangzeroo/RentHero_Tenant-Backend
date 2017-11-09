@@ -392,6 +392,32 @@ exports.get_images_for_specific_building = (req, res, next) => {
     })
 }
 
+exports.get_all_summary_images = (req, res, next) => {
+  const info = req.body
+  const values = [info.building_id]
+  let get_images =  `SELECT id AS image_id, image_url, position FROM summary_images
+                        WHERE building_id = $1
+                        ORDER BY position
+                      `
+  const return_rows = (rows) => {
+    res.json(rows)
+  }
+  query(get_images, values)
+    .then((data) => {
+      return stringify_rows(data)
+    })
+    .then((data) => {
+      return json_rows(data)
+
+    })
+    .then((data) => {
+      return return_rows(data)
+    })
+    .catch((error) => {
+        res.status(500).send('Failed to get property info')
+    })
+}
+
 exports.get_all_images_size_for_specific_building = (req, res, next) => {
   const info = req.body
   const values = [info.building_id]
