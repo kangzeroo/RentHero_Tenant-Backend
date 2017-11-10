@@ -31,7 +31,7 @@ module.exports = function(app){
 	app.post('/get_building_by_place_id', json_encoding, BuildingQuery.get_building_by_place_id)
 	app.post('/get_building_by_address', json_encoding, BuildingQuery.get_building_by_address)
 	app.post('/get_specific_landlord', json_encoding, BuildingQuery.get_specific_landlord)
-
+	app.post('/get_all_summary_images', json_encoding, BuildingQuery.get_all_summary_images)
 	app.post('/get_images_for_specific_building', json_encoding, BuildingQuery.get_images_for_specific_building)
 	app.post('/get_all_images_size_for_specific_building', json_encoding, BuildingQuery.get_all_images_size_for_specific_building)
 	app.post('/get_num_virtual_tours', json_encoding, BuildingQuery.get_num_virtual_tours)
