@@ -26,8 +26,9 @@ exports.get_all_active_buildings = (req, res, next) => {
   let get_building = `SELECT a.building_id, a.corporation_id, a.building_alias,
                              a.building_desc, a.building_type, a.created_at,
                              b.building_address, b.gps_x, b.gps_y,
-                             c.thumbnail, c.cover_photo, d.imgs, e.min_price,
-                             f.min_rooms, f.max_rooms
+                             c.thumbnail, c.cover_photo, d.imgs, e.min_price, e.max_price,
+                             f.min_rooms, f.max_rooms,
+                             h.ensuite_bath, i.utils_incl, j.label
                       FROM building a
                       INNER JOIN
                         (SELECT address_id, gps_x, gps_y,
@@ -49,7 +50,7 @@ exports.get_all_active_buildings = (req, res, next) => {
                         ) d
                       ON a.building_id = d.building_id
                       LEFT OUTER JOIN
-                        (SELECT building_id, MIN(price) AS min_price FROM room
+                        (SELECT building_id, MIN(price) AS min_price, MAX(price) AS max_price FROM room
                          GROUP BY building_id) e
                       ON a.building_id = e.building_id
                       LEFT OUTER JOIN
@@ -62,7 +63,27 @@ exports.get_all_active_buildings = (req, res, next) => {
                             ON au.suite_id = bu.suite_id
                             GROUP BY au.building_id) f
                        ON a.building_id = f.building_id
-                       ORDER BY RAND()
+                       LEFT OUTER JOIN
+                          (SELECT amen.building_id, bmen.ensuite_bath
+                             FROM building amen
+                           LEFT OUTER JOIN
+                              (SELECT DISTINCT building_id, True AS ensuite_bath
+                                 FROM amenities
+                                 WHERE amenity_alias = 'Ensuite Bathroom') bmen
+                           ON amen.building_id = bmen.building_id
+                         ) h
+                       ON a.building_id = h.building_id
+                       LEFT OUTER JOIN
+                           (SELECT DISTINCT amen2.building_id, bmen2.utils_incl
+                              FROM building amen2
+                            LEFT OUTER JOIN
+                               (SELECT building_id, True AS utils_incl
+                                  FROM amenities
+                                  WHERE amenity_class = 'free_utils') bmen2
+                            ON amen2.building_id = bmen2.building_id
+                          ) i
+                        ON a.building_id = i.building_id
+                        INNER JOIN (SELECT * FROM building_details WHERE active=true) j ON a.building_id = j.building_id
                       `
 
   const return_rows = (rows) => {
@@ -91,7 +112,7 @@ exports.get_all_active_buildings_geo = (req, res, next) => {
   let get_building = `SELECT a.building_id, a.corporation_id, a.building_alias,
                              a.building_desc, a.building_type, a.created_at,
                              b.building_address, b.gps_x, b.gps_y,
-                             c.thumbnail, c.cover_photo, d.imgs, e.min_price,
+                             c.thumbnail, c.cover_photo, d.imgs, e.min_price, e.max_price,
                              f.min_rooms, f.max_rooms,
                              h.ensuite_bath, i.utils_incl, j.label
                       FROM building a
@@ -116,7 +137,7 @@ exports.get_all_active_buildings_geo = (req, res, next) => {
                         ) d
                       ON a.building_id = d.building_id
                       LEFT OUTER JOIN
-                        (SELECT building_id, MIN(price) AS min_price FROM room
+                        (SELECT building_id, MIN(price) AS min_price, MAX(price) AS max_price FROM room
                          GROUP BY building_id) e
                       ON a.building_id = e.building_id
                       LEFT OUTER JOIN
