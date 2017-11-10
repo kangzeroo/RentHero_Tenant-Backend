@@ -31,7 +31,6 @@ exports.submit_request = (req, res, next) => {
   query(insert_request, values)
   .then((data) => {
     const time = moment(data.rows[0].created_at).format('MMMM Do YYYY')
-    console.log(time)
     res.json({
       message: 'successfully submitted request',
       created_at: time,
