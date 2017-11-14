@@ -484,7 +484,18 @@ exports.get_all_images_size_for_specific_building = (req, res, next) => {
 exports.get_num_virtual_tours = (req, res, next) => {
   const info = req.body
   const values = [info.building_id]
-  let get_images =  `SELECT COUNT(*) AS vr_tour_count FROM media WHERE istaging_url IS NOT NULL AND room_id IS NULL AND building_id = $1
+  let get_images =  `
+                     SELECT SUM(vr_tour_count) vr_tour_count FROM (
+                       SELECT COUNT(*) AS vr_tour_count FROM media WHERE istaging_url IS NOT NULL AND room_id IS NULL AND building_id = $1
+                       UNION ALL
+                       SELECT COUNT(*) AS vr_tour_count FROM media WHERE matterport_url IS NOT NULL AND room_id IS NULL AND building_id = $1
+                       UNION ALL
+                       SELECT COUNT(*) AS vr_tour_count FROM media WHERE video_url IS NOT NULL AND room_id IS NULL AND building_id = $1
+                       UNION ALL
+                       SELECT COUNT(*) AS vr_tour_count FROM media WHERE babylon_vr_url IS NOT NULL AND room_id IS NULL AND building_id = $1
+                       UNION ALL
+                       SELECT COUNT(*) AS vr_tour_count FROM media WHERE iguide_url IS NOT NULL AND room_id IS NULL AND building_id = $1
+                     ) s
                       `
 
   const return_rows = (rows) => {
