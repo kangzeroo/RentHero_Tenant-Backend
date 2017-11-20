@@ -276,7 +276,7 @@ exports.get_specific_building_by_alias = (req, res, next) => {
                              b.gps_x, b.gps_y, b.place_id,
                              c.thumbnail, c.cover_photo, c.istaging_url, c.iguide_url, c.video_url, c.matterport_url,
                              d.imgs,
-                             e.label,
+                             e.label, e.prize,
                              f.min_price
                       FROM (SELECT * FROM building WHERE lower(building_alias) = $1) a
                       INNER JOIN
