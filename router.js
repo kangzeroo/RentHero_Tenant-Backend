@@ -65,7 +65,7 @@ module.exports = function(app){
 	app.post('/insert_user', json_encoding, TenantQuery.insert_user)
 
 	// Requests routes
-	app.post('/submit_request', json_encoding, RequestQuery.submit_request)
+	// app.post('/submit_request', json_encoding, RequestQuery.submit_request)
 
 	// Landlord routes
 	app.post('/get_landlord_info', json_encoding, LandlordQuery.get_landlord_info)
