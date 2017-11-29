@@ -222,7 +222,7 @@ exports.get_specific_landlord = (req, res, next) => {
 exports.get_specific_building = (req, res, next) => {
   const info = req.body
   const values = [info.building_id]
-  let get_building =  `SELECT a.building_id, a.corporation_id, a.building_alias,
+  let get_building =  `SELECT a.building_id, a.building_alias,
                              a.building_desc, a.building_type, b.building_address,
                              b.gps_x, b.gps_y, c.istaging_url,
                              c.thumbnail, c.cover_photo, d.label, e.min_price

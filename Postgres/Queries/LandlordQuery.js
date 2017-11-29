@@ -24,7 +24,7 @@ exports.get_landlord_info = (req, res, next) => {
   const info = req.body
   const values = [info.building_id]
 
-  const get_landlord = `SELECT b.corporation_name, b.phone, b.thumbnail
+  const get_landlord = `SELECT b.corporation_name, b.phone, b.thumbnail, b.email
                           FROM corporation_building a
                           INNER JOIN corporation b
                           ON a.corporation_id = b.corporation_id
@@ -45,6 +45,7 @@ exports.get_landlord_info = (req, res, next) => {
       return return_rows(data)
     })
     .catch((error) => {
+      console.log(error)
         res.status(500).send('Failed to get landlord info')
     })
 }
