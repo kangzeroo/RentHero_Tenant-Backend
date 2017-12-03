@@ -277,7 +277,8 @@ exports.get_specific_building_by_alias = (req, res, next) => {
                              c.thumbnail, c.cover_photo, c.istaging_url, c.iguide_url, c.video_url, c.matterport_url,
                              d.imgs,
                              e.label, e.prize,
-                             f.min_price
+                             f.min_price, f.max_price,
+                             g.min_rooms, g.max_rooms
                       FROM (SELECT * FROM building WHERE lower(building_alias) = $1) a
                       INNER JOIN
                         (SELECT address_id, CONCAT(street_code, ' ', street_name, ', ', city) AS building_address,
@@ -302,11 +303,21 @@ exports.get_specific_building_by_alias = (req, res, next) => {
                       INNER JOIN building_details e ON a.building_id = e.building_id
                       LEFT OUTER JOIN
                         (
-                         SELECT building_id, MIN(price) AS min_price
+                         SELECT building_id, MIN(price) AS min_price, MAX(price) AS max_price
                            FROM room
                           GROUP BY building_id
                         ) f
                       ON a.building_id = f.building_id
+                      LEFT OUTER JOIN
+                        (SELECT au.building_id, MIN(bu.room_count) AS min_rooms, MAX(bu.room_count) AS max_rooms
+                           FROM suite au
+                           INNER JOIN
+                           (SELECT suite_id, COUNT(*) AS room_count
+                              FROM room
+                              GROUP BY suite_id) bu
+                            ON au.suite_id = bu.suite_id
+                            GROUP BY au.building_id) g
+                       ON a.building_id = g.building_id
                       `
   const return_rows = (rows) => {
     res.json(rows)
