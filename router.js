@@ -31,7 +31,7 @@ module.exports = function(app){
 	app.post('/get_tenant_info', [json_encoding, JWT_Check], TenantQuery.get_tenant_info)
 
 	// search routes
-	app.post('/get_all_active_buildings', [json_encoding, JWT_Check], BuildingQuery.get_all_active_buildings)
+	app.post('/get_all_active_buildings', json_encoding, BuildingQuery.get_all_active_buildings)
 	app.post('/get_all_active_buildings_geo', [json_encoding, JWT_Check], BuildingQuery.get_all_active_buildings_geo)
 	app.post('/get_specific_building', [json_encoding, JWT_Check], BuildingQuery.get_specific_building)
 	app.post('/get_specific_building_by_alias', [json_encoding, JWT_Check], BuildingQuery.get_specific_building_by_alias)

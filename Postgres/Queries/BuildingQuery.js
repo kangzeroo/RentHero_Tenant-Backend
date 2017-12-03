@@ -26,7 +26,8 @@ exports.get_all_active_buildings = (req, res, next) => {
   let get_building = `SELECT a.building_id, a.corporation_id, a.building_alias,
                              a.building_desc, a.building_type, a.created_at,
                              b.building_address, b.gps_x, b.gps_y,
-                             c.thumbnail, c.cover_photo, d.imgs, e.min_price, e.max_price,
+                             c.thumbnail, c.cover_photo, d.imgs,
+                             e.min_price, e.max_price,
                              f.min_rooms, f.max_rooms,
                              h.ensuite_bath, i.utils_incl, j.label
                       FROM building a
@@ -188,6 +189,7 @@ exports.get_all_active_buildings_geo = (req, res, next) => {
       return return_rows(data)
     })
     .catch((error) => {
+        console.log(error)
         res.status(500).send('Failed to get buildings info')
     })
 }
