@@ -18,6 +18,7 @@ const log_through = data => {
   return data
 }
 
+
 exports.insert_user = (req, res, next) => {
   const info = req.body
   const values = [info.id, info.name, info.picurl]
@@ -39,4 +40,53 @@ exports.insert_user = (req, res, next) => {
     console.log(error)
     res.status(500).send('Failed to Save User')
   })
+}
+
+
+exports.post_tenant_info = (req, res, next) => {
+  // const info = req.body
+  // console.log(info)
+  // we can optionally accept a pre-defined corporation for this staff member to be associated with
+  // let query_string = `INSERT INTO staff (staff_id${info.corporation_id ? ', corporation_id' : ''}, email, name, phone,
+  //                                       staff_title)
+  //                     VALUES ('${info.staff_id}'${info.corporation_id ? `, '${info.corporation_id}'` : ''},
+  //                             '${info.email}', '${info.name}', '${info.phone}', '${info.staff_title}')`
+  // console.log(query_string)
+
+  // query(query_string).then((data) => {
+  //   // console.log('register info inserted in postgres')
+  //   res.json({
+  //     message: 'Successfully created account! Check your email for the confirmation link',
+  //     data: data
+  //   })
+  // })
+  // .catch((error) => {
+  //   console.log(error)
+  //     res.status(500).send('Failed to save tenant info')
+  // })
+}
+
+exports.get_tenant_info = (req, res, next) => {
+  // const info = req.body
+  // let query_string = `SELECT * FROM staff WHERE staff_id = '${info.staff_id}'`
+  // const return_rows = (rows) => {
+  //   res.json(rows)
+  // }
+  //
+  // query(query_string)
+  //   .then((data) => {
+  //     return stringify_rows(data)
+  //   })
+  //   .then((data) => {
+  //     return log_through(data)
+  //   })
+  //   .then((data) => {
+  //     // console.log("========================")
+  //     // console.log(typeof JSON.parse(data))
+  //     // console.log(JSON.parse(data))
+  //     return return_rows(JSON.parse(data))
+  //   })
+  //   .catch((error) => {
+  //       res.status(500).send('Failed to get tenant info')
+  //   })
 }
