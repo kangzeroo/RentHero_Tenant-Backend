@@ -38,7 +38,7 @@ exports.get_available_suites = (req, res, next) => {
                           ) b
                           ON a.suite_id = b.suite_id
                           LEFT OUTER JOIN (
-                            SELECT suite_id, array_agg(image_url) AS imgs
+                            SELECT suite_id, array_agg(DISTINCT image_url) AS imgs
                               FROM images
                               WHERE building_id = $1
                               GROUP BY suite_id
