@@ -10,6 +10,7 @@ const SubletQuery = require('./SubletScrapper/SubletQuery')
 const Authentication = require('./SubletScrapper/FacebookToken')
 const RequestQuery = require('./Postgres/Queries/RequestQuery')
 const LandlordQuery = require('./Postgres/Queries/LandlordQuery')
+const FavoritesQuery = require('./Postgres/Queries/FavoritesQueries')
 
 const JWT_Check = require('./auth/JWT_Check').JWT_Check
 const originCheck = require('./auth/originCheck').originCheck
@@ -76,4 +77,11 @@ module.exports = function(app){
 
 	// Landlord routes
 	app.post('/get_landlord_info', [json_encoding, originCheck], LandlordQuery.get_landlord_info)
+
+	// Favorites routes
+	app.post('/insert_building_favorite', [json_encoding, originCheck], FavoritesQuery.insert_building_favorite)
+	app.post('/insert_suite_favorite', [json_encoding, originCheck], FavoritesQuery.insert_suite_favorite)
+	app.post('/delete_building_favorite', [json_encoding, originCheck], FavoritesQuery.delete_building_favorite)
+	app.post('/delete_suite_favorite', [json_encoding, originCheck], FavoritesQuery.delete_suite_favorite)
+	app.post('/get_all_favorites_for_tenant', [json_encoding, originCheck], FavoritesQuery.get_all_favorites_for_tenant)
 }
