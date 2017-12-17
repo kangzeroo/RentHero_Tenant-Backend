@@ -43,9 +43,7 @@ exports.get_all_active_buildings = (req, res, next) => {
                         ON a.building_id = c.building_id
                       LEFT OUTER JOIN
                         (SELECT building_id, array_agg(image_url ORDER BY position) AS imgs
-                          FROM images
-                          WHERE suite_id IS NULL
-                            AND room_id IS NULL
+                          FROM summary_images
                           GROUP BY building_id
                         ) d
                       ON a.building_id = d.building_id
@@ -83,7 +81,7 @@ exports.get_all_active_buildings = (req, res, next) => {
                             ON amen2.building_id = bmen2.building_id
                           ) i
                         ON a.building_id = i.building_id
-                        INNER JOIN (SELECT * FROM building_details WHERE active=true) j ON a.building_id = j.building_id
+                        INNER JOIN (SELECT building_id, label FROM building_details WHERE active=true) j ON a.building_id = j.building_id
                       `
 
   const return_rows = (rows) => {
@@ -130,9 +128,7 @@ exports.get_all_active_buildings_geo = (req, res, next) => {
                         ON a.building_id = c.building_id
                       LEFT OUTER JOIN
                         (SELECT building_id, array_agg(image_url ORDER BY position) AS imgs
-                          FROM images
-                          WHERE suite_id IS NULL
-                            AND room_id IS NULL
+                          FROM summary_images
                           GROUP BY building_id
                         ) d
                       ON a.building_id = d.building_id
