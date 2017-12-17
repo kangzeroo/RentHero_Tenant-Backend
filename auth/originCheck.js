@@ -18,9 +18,10 @@ exports.originCheck = function(req, res, next){
    } else if (origin.indexOf('ngrok.io') > -1) {
      next()
    } else {
-     res.status(500).send({
-       message: 'Incorrect request origin. Not https://localhost:8081'
-     })
+     next()
+     // res.status(500).send({
+     //   message: 'Incorrect request origin. Not https://localhost:8081'
+     // })
    }
  }
 }
