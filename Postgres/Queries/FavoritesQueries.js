@@ -25,7 +25,7 @@ exports.insert_building_favorite = (req, res, next) => {
 
   const values = [info.tenant_id, info.building_id]
 
-  const insert_fav = `INSERT INTO favorites (tenant_id, building_id) VALUES ($1, $2)`
+  const insert_fav = `INSERT INTO favorites (tenant_id, building_id, liked) VALUES ($1, $2, true)`
 
   query(insert_fav, values)
   .then((data) => {
@@ -102,6 +102,32 @@ exports.get_all_favorites_for_tenant = (req, res, next) => {
 
   const return_rows = (rows) => {
     res.json(rows)
+  }
+
+  query(get_favs, values)
+    .then((data) => {
+      return stringify_rows(data)
+    })
+    .then((data) => {
+      return json_rows(data)
+    })
+    .then((data) => {
+      return return_rows(data)
+    })
+    .catch((error) => {
+        res.status(500).send('Failed to get favorites')
+    })
+}
+
+exports.get_tenant_favorite_for_building = (req, res, next) => {
+  const info = req.body
+  const values = [info.tenant_id, info.building_id]
+
+  const get_favs = `SELECT * FROM favorites WHERE tenant_id = $1 AND building_id = $2 AND liked=true AND suite_id IS NULL`
+
+  const return_rows = (rows) => {
+    console.log(rows)
+    res.json(rows[0])
   }
 
   query(get_favs, values)

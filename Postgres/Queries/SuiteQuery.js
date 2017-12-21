@@ -21,7 +21,7 @@ exports.get_available_suites = (req, res, next) => {
 
   let get_suites = `SELECT a.suite_id, a.suite_code, a.suite_alias, a.suite_style_id,
                                b.min_price, b.max_price, b.available, b.total,
-                               c.imgs, d.thumbnail, d.cover_photo
+                               c.imgs, d.thumbnail, d.cover_photo, e.num_rooms
                           FROM (SELECT DISTINCT ON (suite_alias) suite_id, suite_code, suite_alias, suite_style_id
                                   FROM suite
                                   WHERE building_id = $1
@@ -47,9 +47,13 @@ exports.get_available_suites = (req, res, next) => {
                           LEFT OUTER JOIN (
                             SELECT suite_id, thumbnail, cover_photo
                               FROM media
-                              WHERE room_id IS NULL
+                              WHERE building_id = $1 AND room_id IS NULL
                           ) d
                           ON a.suite_id = d.suite_id
+                          LEFT OUTER JOIN (
+                            SELECT suite_id, COUNT(*) AS num_rooms FROM room WHERE building_id = $1 GROUP BY suite_id
+                          ) e
+                          ON a.suite_id = e.suite_id
                           ORDER BY a.suite_code
                        `
   const return_rows = (rows) => {

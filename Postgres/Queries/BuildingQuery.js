@@ -19,7 +19,6 @@ const log_through = data => {
   return data
 }
 
-
 exports.get_all_active_buildings = (req, res, next) => {
   const info = req.body
 
@@ -81,7 +80,8 @@ exports.get_all_active_buildings = (req, res, next) => {
                             ON amen2.building_id = bmen2.building_id
                           ) i
                         ON a.building_id = i.building_id
-                        INNER JOIN (SELECT building_id, label FROM building_details WHERE active=true) j ON a.building_id = j.building_id
+                        INNER JOIN (SELECT building_id, label FROM building_details WHERE active=true) j
+                        ON a.building_id = j.building_id
                       `
 
   const return_rows = (rows) => {
@@ -99,6 +99,7 @@ exports.get_all_active_buildings = (req, res, next) => {
       return return_rows(data)
     })
     .catch((error) => {
+      console.log(error)
         res.status(500).send('Failed to get buildings info')
     })
 }
@@ -749,7 +750,6 @@ exports.get_num_virtual_tours = (req, res, next) => {
         res.status(500).send('Failed to get property info')
     })
 }
-
 
 exports.get_amenities_for_specific_building = (req, res, next) => {
   const info = req.body
