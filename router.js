@@ -85,4 +85,5 @@ module.exports = function(app){
 	app.post('/delete_building_favorite', [json_encoding, originCheck], FavoritesQuery.delete_building_favorite)
 	app.post('/delete_suite_favorite', [json_encoding, originCheck], FavoritesQuery.delete_suite_favorite)
 	app.post('/get_all_favorites_for_tenant', [json_encoding, originCheck], FavoritesQuery.get_all_favorites_for_tenant)
+	app.post('/get_tenant_favorite_for_building', [json_encoding, originCheck], FavoritesQuery.get_tenant_favorite_for_building)
 }
