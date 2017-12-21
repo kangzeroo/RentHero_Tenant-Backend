@@ -103,7 +103,7 @@ exports.get_amenities_for_suite = (req, res, next) => {
   console.log('get_amenities_for_suite')
   const info = req.body
   const values = [info.building_id, info.suite_id]
-  const get_amenities = `SELECT a.amenity_alias, a.amenity_type, a.amenity_class, d.imgs
+  const get_amenities = `SELECT a.amenity_id, a.amenity_alias, a.amenity_type, a.amenity_class, d.imgs
                           FROM (SELECT * FROM amenities
                                 WHERE building_id = $1
                                   AND suite_id = $2
