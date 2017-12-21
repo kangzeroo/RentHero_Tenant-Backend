@@ -3,7 +3,7 @@ const pg = require('pg')
 
 const env = process.env.NODE_ENV || 'production'
 const config = require('./config')[env]
-
+console.log(config)
 // create a config to configure both pooling behavior
 // and client options
 // note: all config is optional and the environment variables

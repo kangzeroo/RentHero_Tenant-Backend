@@ -40,6 +40,12 @@ if (process.env.NODE_ENV === 'production') {
   server.listen(port, function(){
     console.log("Server listening on https: ", port)
   })
+} else if (process.env.NODE_ENV === 'demo') {
+  const port = process.env.PORT || 3002
+  const server = http.createServer(app)
+  server.listen(port, () => {
+    console.log('Server listening on http: ', port)
+  })
 } else {
   // instantiate the SSL certificate necessary for HTTPS
   const options = {

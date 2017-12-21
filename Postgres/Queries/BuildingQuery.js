@@ -42,7 +42,7 @@ exports.get_all_active_buildings = (req, res, next) => {
                         ON a.building_id = c.building_id
                       LEFT OUTER JOIN
                         (SELECT building_id, array_agg(image_url ORDER BY position) AS imgs
-                          FROM summary_images
+                          FROM images
                           GROUP BY building_id
                         ) d
                       ON a.building_id = d.building_id

@@ -14,11 +14,15 @@ exports.originCheck = function(req, res, next){
  } else {
    if (origin.indexOf('https://localhost:8081') > -1) {
      next()
+   } else if (origin.indexOf('http://localhost:3001') > -1 || origin.indexOf('https://localhost:3000') > -1) {
+     next()
+   } else if (origin.indexOf('ngrok.io') > -1) {
+     next()
    } else {
+     next()
      // res.status(500).send({
      //   message: 'Incorrect request origin. Not https://localhost:8081'
      // })
-     next()
    }
  }
 }
