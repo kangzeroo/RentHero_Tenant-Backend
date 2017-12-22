@@ -99,7 +99,7 @@ exports.get_all_favorites_for_tenant = (req, res, next) => {
   const values = [info.tenant_id]
 
   const get_favs = `SELECT b.building_id, b.building_alias, b.building_type,
-                           c.building_address,
+                           c.building_address, c.gps_x, c.gps_y,
                            d.thumbnail,
                            JSON_AGG((e.suite_id, e.suite_alias, f.thumbnail)) AS suites
                       FROM (
@@ -132,7 +132,7 @@ exports.get_all_favorites_for_tenant = (req, res, next) => {
                       ) f
                         ON a.suite_id = f.suite_id
                       GROUP BY b.building_id, b.building_alias, b.building_type,
-                               c.building_address, d.thumbnail
+                               c.building_address, c.gps_x, c.gps_y, d.thumbnail
                    `
 
   const return_rows = (rows) => {
@@ -179,3 +179,65 @@ exports.get_tenant_favorite_for_building = (req, res, next) => {
         res.status(500).send('Failed to get favorites')
     })
 }
+
+exports.get_favorites_for_tenants_of_group = (req, res, next) => {
+  const info = req.body
+  const array_of_ids = info.tenant_ids.map((val, ind) => { return `$${ind + 1}` }).join(', ')
+  console.log(array_of_ids)
+
+  const values = info.tenant_ids
+
+  const get_favs = `SELECT b.building_id, b.building_alias, b.building_type,
+                           c.building_address, c.gps_x, c.gps_y,
+                           d.thumbnail, JSON_AGG(a.tenant_id) AS tenant_ids,
+                           JSON_AGG((e.suite_id, e.suite_alias, f.thumbnail)) AS suites
+                      FROM (
+                        SELECT building_id, suite_id, tenant_id, created_at
+                          FROM favorites
+                      ) a
+                      INNER JOIN building b
+                        ON a.building_id = b.building_id
+                      INNER JOIN
+                        (SELECT address_id, gps_x, gps_y,
+                                CONCAT(street_code, ' ', street_name, ', ', city) AS building_address
+                           FROM address
+                         ) c
+                        ON b.address_id = c.address_id
+                      LEFT OUTER JOIN
+                        (SELECT building_id, thumbnail, cover_photo FROM media
+                          WHERE suite_id IS NULL
+                            AND room_id IS NULL) d
+                        ON a.building_id = d.building_id
+                      LEFT OUTER JOIN (
+                        SELECT suite_id, suite_alias
+                          FROM suite
+                      ) e
+                        ON a.suite_id = e.suite_id
+                      LEFT OUTER JOIN (
+                        SELECT suite_id, thumbnail
+                          FROM media
+                         WHERE room_id IS NULL
+                      ) f
+                        ON a.suite_id = f.suite_id
+                      WHERE a.tenant_id IN (${array_of_ids})
+                      GROUP BY b.building_id, b.building_alias, b.building_type,
+                               c.building_address, c.gps_x, c.gps_y, d.thumbnail`
+
+     const return_rows = (rows) => {
+       res.json(rows)
+     }
+
+     query(get_favs, values)
+       .then((data) => {
+         return stringify_rows(data)
+       })
+       .then((data) => {
+         return json_rows(data)
+       })
+       .then((data) => {
+         return return_rows(data)
+       })
+       .catch((error) => {
+           res.status(500).send('Failed to get favorites')
+       })
+  }
