@@ -25,7 +25,7 @@ exports.insert_building_favorite = (req, res, next) => {
 
   const values = [info.tenant_id, info.building_id]
 
-  const insert_fav = `INSERT INTO favorites (tenant_id, building_id, liked) VALUES ($1, $2, true)`
+  const insert_fav = `INSERT INTO favorites (tenant_id, building_id) VALUES ($1, $2)`
 
   query(insert_fav, values)
   .then((data) => {
