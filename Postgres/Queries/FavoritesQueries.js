@@ -98,7 +98,42 @@ exports.get_all_favorites_for_tenant = (req, res, next) => {
 
   const values = [info.tenant_id]
 
-  const get_favs = `SELECT * FROM favorites WHERE tenant_id = $1`
+  const get_favs = `SELECT b.building_id, b.building_alias, b.building_type,
+                           c.building_address,
+                           d.thumbnail,
+                           JSON_AGG((e.suite_id, e.suite_alias, f.thumbnail)) AS suites
+                      FROM (
+                        SELECT building_id, suite_id, created_at
+                          FROM favorites
+                         WHERE tenant_id = $1
+                      ) a
+                      INNER JOIN building b
+                        ON a.building_id = b.building_id
+                      INNER JOIN
+                        (SELECT address_id, gps_x, gps_y,
+                                CONCAT(street_code, ' ', street_name, ', ', city) AS building_address
+                           FROM address
+                         ) c
+                        ON b.address_id = c.address_id
+                      LEFT OUTER JOIN
+                        (SELECT building_id, thumbnail, cover_photo FROM media
+                          WHERE suite_id IS NULL
+                            AND room_id IS NULL) d
+                        ON a.building_id = d.building_id
+                      LEFT OUTER JOIN (
+                        SELECT suite_id, suite_alias
+                          FROM suite
+                      ) e
+                        ON a.suite_id = e.suite_id
+                      LEFT OUTER JOIN (
+                        SELECT suite_id, thumbnail
+                          FROM media
+                         WHERE room_id IS NULL
+                      ) f
+                        ON a.suite_id = f.suite_id
+                      GROUP BY b.building_id, b.building_alias, b.building_type,
+                               c.building_address, d.thumbnail
+                   `
 
   const return_rows = (rows) => {
     res.json(rows)
@@ -115,6 +150,7 @@ exports.get_all_favorites_for_tenant = (req, res, next) => {
       return return_rows(data)
     })
     .catch((error) => {
+      console.log(error)
         res.status(500).send('Failed to get favorites')
     })
 }
@@ -123,11 +159,10 @@ exports.get_tenant_favorite_for_building = (req, res, next) => {
   const info = req.body
   const values = [info.tenant_id, info.building_id]
 
-  const get_favs = `SELECT * FROM favorites WHERE tenant_id = $1 AND building_id = $2 AND liked=true AND suite_id IS NULL`
+  const get_favs = `SELECT * FROM favorites WHERE tenant_id = $1 AND building_id = $2`
 
   const return_rows = (rows) => {
-    console.log(rows)
-    res.json(rows[0])
+    res.json(rows)
   }
 
   query(get_favs, values)
