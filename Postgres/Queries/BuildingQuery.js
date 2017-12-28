@@ -42,7 +42,8 @@ exports.get_all_active_buildings = (req, res, next) => {
                         ON a.building_id = c.building_id
                       LEFT OUTER JOIN
                         (SELECT building_id, array_agg(image_url ORDER BY position) AS imgs
-                          FROM summary_images
+                          FROM images
+                          WHERE suite_id IS NULL AND room_id IS NULL
                           GROUP BY building_id
                         ) d
                       ON a.building_id = d.building_id
@@ -99,6 +100,7 @@ exports.get_all_active_buildings = (req, res, next) => {
       return return_rows(data)
     })
     .catch((error) => {
+      console.log('====get_all_active_buildings====')
       console.log(error)
         res.status(500).send('Failed to get buildings info')
     })
@@ -597,7 +599,6 @@ exports.get_building_by_place_id = (req, res, next) => {
 
 exports.get_building_by_address = (req, res, next) => {
   const info = req.body
-  console.log(info)
   const values = [info.street_code, info.street_name, info.city, info.province, info.country, info.postal_code]
 
   let get_building =  `SELECT a.building_id, a.corporation_id, a.building_alias,
