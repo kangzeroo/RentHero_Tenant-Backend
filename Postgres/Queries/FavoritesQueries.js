@@ -155,6 +155,34 @@ exports.get_all_favorites_for_tenant = (req, res, next) => {
     })
 }
 
+exports.get_all_tenant_favorites = (req, res, next) => {
+  const info = req.body
+
+  const values = [info.tenant_id]
+
+  const get_favs = `SELECT building_id, suite_id FROM favorites WHERE tenant_id = $1
+                   `
+
+  const return_rows = (rows) => {
+    res.json(rows)
+  }
+
+  query(get_favs, values)
+    .then((data) => {
+      return stringify_rows(data)
+    })
+    .then((data) => {
+      return json_rows(data)
+    })
+    .then((data) => {
+      return return_rows(data)
+    })
+    .catch((error) => {
+      console.log(error)
+        res.status(500).send('Failed to get favorites')
+    })
+}
+
 exports.get_tenant_favorite_for_building = (req, res, next) => {
   const info = req.body
   const values = [info.tenant_id, info.building_id]
