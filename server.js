@@ -40,25 +40,18 @@ if (process.env.NODE_ENV === 'production') {
   server.listen(port, function(){
     console.log("Server listening on https: ", port)
   })
-} else if (process.env.NODE_ENV === 'demo') {
-  const port = process.env.PORT || 3002
-  const server = http.createServer(app)
-  server.listen(port, () => {
-    console.log('Server listening on http: ', port)
-  })
 } else {
-  // instantiate the SSL certificate necessary for HTTPS
   const options = {
-      // ca: fs.readFileSync('./credentials/rentburrow_com.ca-bundle'),
+      ca: fs.readFileSync('./credentials/rentburrow_com.ca-bundle'),
       key: fs.readFileSync('./credentials/rentburrow_com.key'),
       cert: fs.readFileSync('./credentials/rentburrow_com.crt'),
       requestCert: false,
       rejectUnauthorized: false
   }
-  const server = http.createServer(app)
+  const server = https.createServer(options, app)
   // listen to the server on port
   server.listen(port, function(){
-    console.log("Server listening on http: ", port)
+    console.log("Server listening on https: ", port)
   })
 }
 
