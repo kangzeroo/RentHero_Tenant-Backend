@@ -46,6 +46,7 @@ module.exports = function(app){
 	app.post('/get_all_images_size_for_specific_building', [json_encoding, originCheck], BuildingQuery.get_all_images_size_for_specific_building)
 	app.post('/get_num_virtual_tours', [json_encoding, originCheck], BuildingQuery.get_num_virtual_tours)
 	app.post('/get_amenities_for_specific_building', [json_encoding, originCheck], BuildingQuery.get_amenities_for_specific_building)
+	app.post('/get_recommended_buildings', [json_encoding, originCheck], BuildingQuery.get_recommended_buildings)
 
 	// room queries
 	app.post('/get_room_page', [json_encoding, originCheck], RoomQuery.get_room_page)
