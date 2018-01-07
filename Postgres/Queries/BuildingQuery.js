@@ -206,206 +206,127 @@ exports.get_all_active_buildings_mobile_filtered = (req, res, next) => {
   let get_building
 
   if (info.ensuite && info.parking) {
-    get_building = `SELECT a.building_id, a.corporation_id, a.building_alias,
-                           a.building_desc, a.building_type, a.created_at,
-                           b.building_address, b.gps_x, b.gps_y,
-                           c.thumbnail, c.cover_photo, d.imgs, e.min_price, e.max_price,
-                           f.min_rooms, f.max_rooms,
-                           j.label
-                    FROM (SELECT * FROM building WHERE building_type IN ('${property_types[0]}',
-                                              '${property_types[1]}',
-                                              '${property_types[2]}')
-                            ) a
-                    INNER JOIN
-                      (SELECT address_id, gps_x, gps_y,
-                              CONCAT(street_code, ' ', street_name, ', ', city) AS building_address
-                         FROM address
-                       ) b
-                      ON a.address_id = b.address_id
-                    LEFT OUTER JOIN
-                      (SELECT building_id, thumbnail, cover_photo FROM media
-                        WHERE suite_id IS NULL
-                          AND room_id IS NULL) c
-                      ON a.building_id = c.building_id
-                    LEFT OUTER JOIN
-                      (SELECT building_id, array_agg(image_url ORDER BY position) AS imgs
-                        FROM summary_images
-                        GROUP BY building_id
-                      ) d
-                    ON a.building_id = d.building_id
-                    LEFT OUTER JOIN
-                      (SELECT building_id, MIN(price) AS min_price, MAX(price) AS max_price FROM room
-                       WHERE price >= $1 AND price <= $2
-                       GROUP BY building_id) e
-                    ON a.building_id = e.building_id
-                    LEFT OUTER JOIN
-                      (SELECT au.building_id, MIN(bu.room_count) AS min_rooms, MAX(bu.room_count) AS max_rooms
-                         FROM suite au
-                         INNER JOIN
-                         (SELECT suite_id, COUNT(*) AS room_count
+    get_building = `SELECT a.building_id, a.building_alias
+                       FROM (SELECT * FROM building WHERE building_type IN ('${property_types[0]}',
+                                               '${property_types[1]}',
+                                               '${property_types[2]}')
+                             ) a
+                      INNER JOIN
+                        (SELECT building_id
+                           FROM room
+                          WHERE price >= $1 AND price <= $2
+                          GROUP BY building_id
+                        ) b
+                      ON a.building_id = b.building_id
+                      INNER JOIN (
+                        SELECT au.building_id
+                          FROM suite au
+                        INNER JOIN
+                         (SELECT suite_id
                             FROM room
                             GROUP BY suite_id
                             HAVING COUNT(*) >= $3 AND COUNT(*) <= $4
                           ) bu
                           ON au.suite_id = bu.suite_id
-                          GROUP BY au.building_id) f
-                     ON a.building_id = f.building_id
+                          GROUP BY au.building_id) c
+                       ON a.building_id = c.building_id
                      INNER JOIN (
                        (SELECT building_id FROM amenities WHERE amenity_alias = 'Ensuite Bathroom' GROUP BY building_id)
                        INTERSECT
                        (SELECT building_id FROM amenities WHERE amenity_class = 'parking' GROUP BY building_id)
-                     ) g
-                     ON a.building_id = g.building_id
-                     INNER JOIN (SELECT building_id, label FROM building_details WHERE active=true) j ON a.building_id = j.building_id
+                     ) d
+                     ON a.building_id = d.building_id
+                     INNER JOIN (SELECT building_id, label FROM building_details WHERE active=true) e ON a.building_id = e.building_id
                     `
   } else if (info.ensuite){
-    get_building = `SELECT a.building_id, a.corporation_id, a.building_alias,
-                           a.building_desc, a.building_type, a.created_at,
-                           b.building_address, b.gps_x, b.gps_y,
-                           c.thumbnail, c.cover_photo, d.imgs, e.min_price, e.max_price,
-                           f.min_rooms, f.max_rooms,
-                           j.label
-                    FROM (SELECT * FROM building WHERE building_type IN ('${property_types[0]}',
-                                              '${property_types[1]}',
-                                              '${property_types[2]}')
-                            ) a
-                    INNER JOIN
-                      (SELECT address_id, gps_x, gps_y,
-                              CONCAT(street_code, ' ', street_name, ', ', city) AS building_address
-                         FROM address
-                       ) b
-                      ON a.address_id = b.address_id
-                    LEFT OUTER JOIN
-                      (SELECT building_id, thumbnail, cover_photo FROM media
-                        WHERE suite_id IS NULL
-                          AND room_id IS NULL) c
-                      ON a.building_id = c.building_id
-                    LEFT OUTER JOIN
-                      (SELECT building_id, array_agg(image_url ORDER BY position) AS imgs
-                        FROM summary_images
-                        GROUP BY building_id
-                      ) d
-                    ON a.building_id = d.building_id
-                    LEFT OUTER JOIN
-                      (SELECT building_id, MIN(price) AS min_price, MAX(price) AS max_price FROM room
-                       WHERE price >= $1 AND price <= $2
-                       GROUP BY building_id) e
-                    ON a.building_id = e.building_id
-                    LEFT OUTER JOIN
-                      (SELECT au.building_id, MIN(bu.room_count) AS min_rooms, MAX(bu.room_count) AS max_rooms
-                         FROM suite au
-                         INNER JOIN
-                         (SELECT suite_id, COUNT(*) AS room_count
+    get_building = `SELECT a.building_id, a.building_alias
+                       FROM (SELECT * FROM building WHERE building_type IN ('${property_types[0]}',
+                                               '${property_types[1]}',
+                                               '${property_types[2]}')
+                             ) a
+                      INNER JOIN
+                        (SELECT building_id
+                           FROM room
+                          WHERE price >= $1 AND price <= $2
+                          GROUP BY building_id
+                        ) b
+                      ON a.building_id = b.building_id
+                      INNER JOIN (
+                        SELECT au.building_id
+                          FROM suite au
+                        INNER JOIN
+                         (SELECT suite_id
                             FROM room
                             GROUP BY suite_id
                             HAVING COUNT(*) >= $3 AND COUNT(*) <= $4
                           ) bu
                           ON au.suite_id = bu.suite_id
-                          GROUP BY au.building_id) f
-                     ON a.building_id = f.building_id
-                     INNER JOIN (SELECT building_id FROM amenities WHERE amenity_alias = 'Ensuite Bathroom' GROUP BY building_id) g
-                     ON a.building_id = g.building_id
-                     INNER JOIN (SELECT building_id, label FROM building_details WHERE active=true) j ON a.building_id = j.building_id
+                          GROUP BY au.building_id) c
+                       ON a.building_id = c.building_id
+                     INNER JOIN (SELECT building_id FROM amenities WHERE amenity_alias = 'Ensuite Bathroom' GROUP BY building_id) d
+                     ON a.building_id = d.building_id
+                     INNER JOIN (SELECT building_id, label FROM building_details WHERE active=true) e ON a.building_id = e.building_id
                     `
   } else if (info.parking) {
-    get_building = `SELECT a.building_id, a.corporation_id, a.building_alias,
-                           a.building_desc, a.building_type, a.created_at,
-                           b.building_address, b.gps_x, b.gps_y,
-                           c.thumbnail, c.cover_photo, d.imgs, e.min_price, e.max_price,
-                           f.min_rooms, f.max_rooms,
-                           j.label
-                    FROM (SELECT * FROM building WHERE building_type IN ('${property_types[0]}',
-                                              '${property_types[1]}',
-                                              '${property_types[2]}')
-                            ) a
-                    INNER JOIN
-                      (SELECT address_id, gps_x, gps_y,
-                              CONCAT(street_code, ' ', street_name, ', ', city) AS building_address
-                         FROM address
-                       ) b
-                      ON a.address_id = b.address_id
-                    LEFT OUTER JOIN
-                      (SELECT building_id, thumbnail, cover_photo FROM media
-                        WHERE suite_id IS NULL
-                          AND room_id IS NULL) c
-                      ON a.building_id = c.building_id
-                    LEFT OUTER JOIN
-                      (SELECT building_id, array_agg(image_url ORDER BY position) AS imgs
-                        FROM summary_images
-                        GROUP BY building_id
-                      ) d
-                    ON a.building_id = d.building_id
-                    LEFT OUTER JOIN
-                      (SELECT building_id, MIN(price) AS min_price, MAX(price) AS max_price FROM room
-                       WHERE price >= $1 AND price <= $2
-                       GROUP BY building_id) e
-                    ON a.building_id = e.building_id
-                    LEFT OUTER JOIN
-                      (SELECT au.building_id, MIN(bu.room_count) AS min_rooms, MAX(bu.room_count) AS max_rooms
-                         FROM suite au
-                         INNER JOIN
-                         (SELECT suite_id, COUNT(*) AS room_count
+    get_building = `SELECT a.building_id
+                       FROM (SELECT * FROM building WHERE building_type IN ('${property_types[0]}',
+                                               '${property_types[1]}',
+                                               '${property_types[2]}')
+                             ) a
+                      INNER JOIN
+                        (SELECT building_id
+                           FROM room
+                          WHERE price >= $1 AND price <= $2
+                          GROUP BY building_id
+                        ) b
+                      ON a.building_id = b.building_id
+                      INNER JOIN (
+                        SELECT au.building_id
+                          FROM suite au
+                        INNER JOIN
+                         (SELECT suite_id
                             FROM room
                             GROUP BY suite_id
                             HAVING COUNT(*) >= $3 AND COUNT(*) <= $4
                           ) bu
                           ON au.suite_id = bu.suite_id
-                          GROUP BY au.building_id) f
-                     ON a.building_id = f.building_id
-                     INNER JOIN (SELECT building_id FROM amenities WHERE amenity_class='parking' GROUP BY building_id) g
-                     ON a.building_id = g.building_id
-                     INNER JOIN (SELECT building_id, label FROM building_details WHERE active=true) j ON a.building_id = j.building_id
+                          GROUP BY au.building_id) c
+                       ON a.building_id = c.building_id
+                     INNER JOIN (SELECT building_id FROM amenities WHERE amenity_class='parking' GROUP BY building_id) d
+                     ON a.building_id = d.building_id
+                     INNER JOIN (SELECT building_id, label FROM building_details WHERE active=true) e ON a.building_id = e.building_id
                     `
   } else {
-    get_building = `SELECT a.building_id, a.corporation_id, a.building_alias,
-                           a.building_desc, a.building_type, a.created_at,
-                           b.building_address, b.gps_x, b.gps_y,
-                           c.thumbnail, c.cover_photo, d.imgs, e.min_price, e.max_price,
-                           f.min_rooms, f.max_rooms,
-                           j.label
-                    FROM (SELECT * FROM building WHERE building_type IN ('${property_types[0]}',
-                                              '${property_types[1]}',
-                                              '${property_types[2]}')
-                            ) a
-                    INNER JOIN
-                      (SELECT address_id, gps_x, gps_y,
-                              CONCAT(street_code, ' ', street_name, ', ', city) AS building_address
-                         FROM address
-                       ) b
-                      ON a.address_id = b.address_id
-                    LEFT OUTER JOIN
-                      (SELECT building_id, thumbnail, cover_photo FROM media
-                        WHERE suite_id IS NULL
-                          AND room_id IS NULL) c
-                      ON a.building_id = c.building_id
-                    LEFT OUTER JOIN
-                      (SELECT building_id, array_agg(image_url ORDER BY position) AS imgs
-                        FROM summary_images
-                        GROUP BY building_id
-                      ) d
-                    ON a.building_id = d.building_id
-                    LEFT OUTER JOIN
-                      (SELECT building_id, MIN(price) AS min_price, MAX(price) AS max_price FROM room
-                       WHERE price >= $1 AND price <= $2
-                       GROUP BY building_id) e
-                    ON a.building_id = e.building_id
-                    LEFT OUTER JOIN
-                      (SELECT au.building_id, MIN(bu.room_count) AS min_rooms, MAX(bu.room_count) AS max_rooms
-                         FROM suite au
-                         INNER JOIN
-                         (SELECT suite_id, COUNT(*) AS room_count
+    get_building = `SELECT a.building_id
+                       FROM (SELECT * FROM building WHERE building_type IN ('${property_types[0]}',
+                                               '${property_types[1]}',
+                                               '${property_types[2]}')
+                             ) a
+                      INNER JOIN
+                        (SELECT building_id
+                           FROM room
+                          WHERE price >= $1 AND price <= $2
+                          GROUP BY building_id
+                        ) b
+                      ON a.building_id = b.building_id
+                      INNER JOIN (
+                        SELECT au.building_id
+                          FROM suite au
+                        INNER JOIN
+                         (SELECT suite_id
                             FROM room
                             GROUP BY suite_id
                             HAVING COUNT(*) >= $3 AND COUNT(*) <= $4
                           ) bu
                           ON au.suite_id = bu.suite_id
-                          GROUP BY au.building_id) f
-                     ON a.building_id = f.building_id
-                     INNER JOIN (SELECT building_id, label FROM building_details WHERE active=true) j ON a.building_id = j.building_id
+                          GROUP BY au.building_id) c
+                       ON a.building_id = c.building_id
+                       INNER JOIN (SELECT building_id, label FROM building_details WHERE active=true) d ON a.building_id = d.building_id
                     `
   }
 
   const return_rows = (rows) => {
+    console.log(rows)
     res.json(rows)
   }
   query(get_building, values)
