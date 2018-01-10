@@ -799,3 +799,35 @@ exports.get_amenities_for_specific_building = (req, res, next) => {
         res.status(500).send('Failed to get property info')
     })
 }
+
+exports.get_building_by_id = (req, res, next) => {
+  const info = req.body
+  const values = [info.building_id]
+  let get_building = `SELECT a.building_id, a.corporation_id, a.building_alias,
+                             a.building_desc, a.building_type, b.building_address
+                      FROM (SELECT * FROM building WHERE building_id = $1) a
+                      INNER JOIN
+                        (SELECT address_id, CONCAT(street_code, ' ', street_name, ', ', city) AS building_address,
+                                gps_x, gps_y, place_id
+                        FROM address) b
+                        ON a.address_id = b.address_id
+                      `
+  const return_rows = (rows) => {
+    res.json(rows[0])
+  }
+  query(get_building, values)
+    .then((data) => {
+      return stringify_rows(data)
+    })
+    .then((data) => {
+      return json_rows(data)
+
+    })
+    .then((data) => {
+      return return_rows(data)
+    })
+    .catch((error) => {
+      console.log(error)
+      res.status(500).send('Failed to get property info')
+    })
+}
