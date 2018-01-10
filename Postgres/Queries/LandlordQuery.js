@@ -24,7 +24,7 @@ exports.get_landlord_info = (req, res, next) => {
   const info = req.body
   const values = [info.building_id]
 
-  const get_landlord = `SELECT b.corporation_name, b.phone, b.thumbnail, b.email
+  const get_landlord = `SELECT b.corporation_name, b.phone, b.thumbnail, b.email, b.corporate_landlord, b.corporation_id
                           FROM corporation_building a
                           INNER JOIN corporation b
                           ON a.corporation_id = b.corporation_id
