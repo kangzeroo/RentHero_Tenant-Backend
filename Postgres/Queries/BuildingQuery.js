@@ -41,9 +41,8 @@ exports.get_all_active_buildings = (req, res, next) => {
                             AND room_id IS NULL) c
                         ON a.building_id = c.building_id
                       LEFT OUTER JOIN
-                        (SELECT building_id, array_agg(image_url ORDER BY position) AS imgs
-                          FROM images
-                          WHERE suite_id IS NULL AND room_id IS NULL
+                        (SELECT building_id, array_agg(image_url) AS imgs
+                          FROM summary_images
                           GROUP BY building_id
                         ) d
                       ON a.building_id = d.building_id
@@ -533,7 +532,8 @@ exports.get_specific_building_by_alias = (req, res, next) => {
                         ON a.building_id = c.building_id
                       INNER JOIN
                         (SELECT building_id, array_agg(image_url ORDER BY position) AS imgs
-                          FROM summary_images
+                          FROM images
+                          WHERE suite_id IS NULL AND room_id IS NULL
                           GROUP BY building_id
                         ) d
                       ON a.building_id = d.building_id
