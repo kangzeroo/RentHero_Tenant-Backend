@@ -531,8 +531,7 @@ exports.get_specific_building_by_alias = (req, res, next) => {
                         ON a.building_id = c.building_id
                       INNER JOIN
                         (SELECT building_id, array_agg(image_url ORDER BY position) AS imgs
-                          FROM images
-                          WHERE suite_id IS NULL AND room_id IS NULL
+                          FROM summary_images
                           GROUP BY building_id
                         ) d
                       ON a.building_id = d.building_id
