@@ -1,4 +1,4 @@
-
+const Rx = require('rxjs')
 const AWS = require('aws-sdk')
 const aws_config = require('../credentials/aws_config')
 const dynaDoc = require("dynamodb-doc");
@@ -64,6 +64,8 @@ exports.batch_insert_sublets = function(sublets){
 exports.get_sublets_from_dynamodb = function() {
   const p = new Promise((res, rej) => {
     const timeSince = unixDateSince(30)
+    console.log('------------------ get_sublets_from_dynamodb ------------------')
+    console.log(timeSince)
     // const params = {
     //   TableName: "Rentburrow_Sublets_Operational",
     //   KeyConditionExpression: "#PLACE_ID > :ANYTHING",
@@ -78,6 +80,8 @@ exports.get_sublets_from_dynamodb = function() {
     //   }
     // }
     // console.log(timeSince)
+    // timeSince   = 1515495509300
+    // posted_date = 1518087173432
     const params = {
        "TableName": "Rentburrow_Sublets_Operational",
        "FilterExpression": "#POSTED_DATE > :timeSince",
@@ -89,17 +93,58 @@ exports.get_sublets_from_dynamodb = function() {
        },
        "Limit": 600,
     }
-    // console.log(params)
-    docClient.scan(params, function(err, data) {
-      if (err){
-        console.log(err, err.stack); // an error occurred
-        rej(err)
-      }else{
-        // console.log("====== GOT SUBLETS FROM LAST 100 DAYS =====")
-        // console.log(data);           // successful response
-        res(data.Items)
+    let Items = []
+    const onNext = ({ obs, params }) => {
+      console.log('OBSERVABLE NEXT')
+      console.log('=========== accumlated size: ' + Items.length)
+      docClient.scan(params, (err, data) => {
+        if (err){
+          console.log(err, err.stack); // an error occurred
+          obs.error(err)
+        }else{
+          console.log(data);           // successful response
+          Items = Items.concat(data.Items)
+          if (data.LastEvaluatedKey) {
+            params.ExclusiveStartKey = data.LastEvaluatedKey
+            obs.next({
+              obs,
+              params
+            })
+          } else {
+            obs.complete(data)
+          }
+        }
+      })
+    }
+    Rx.Observable.create((obs) => {
+      obs.next({
+        obs,
+        params
+      })
+    }).subscribe({
+      next: onNext,
+      error: (err) => {
+        console.log('OBSERVABLE ERROR')
+        console.log(err)
+        rej()
+      },
+      complete: (y) => {
+        console.log('OBSERVABLE COMPLETE')
+        console.log(Items.length)
+        res(Items)
       }
     })
+    // console.log(params)
+    // docClient.scan(params, function(err, data) {
+    //   if (err){
+    //     console.log(err, err.stack); // an error occurred
+    //     rej(err)
+    //   }else{
+    //     // console.log("====== GOT SUBLETS FROM LAST 100 DAYS =====")
+    //     console.log(data.Items.length, 'sublets retrieved');           // successful response
+    //     res(data.Items)
+    //   }
+    // })
   })
   return p
 }
@@ -224,4 +269,25 @@ function unixDateSince(numDays){
   const todayUnix = today.getTime()
   const sinceUnix = todayUnix - (numDays*24*60*60*1000)
   return sinceUnix
+}
+
+exports.post_sublet_to_dynamodb = function(sublet_item) {
+  console.log('post_sublet_to_dynamodb')
+  const items = generateSublets(sublet_item)
+  console.log(items)
+  const insertions = items.map((item) => {
+    const p = new Promise((res, rej) => {
+      docClient.putItem(item, function(err, data) {
+        if (err){
+            // console.log(JSON.stringify(err, null, 2));
+            rej()
+        }else{
+            console.log('DYNAMODB INSERTION SUCCESS!')
+            res()
+        }
+      })
+    })
+    return p
+  })
+  return Promise.all(insertions)
 }

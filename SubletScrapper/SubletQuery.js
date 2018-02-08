@@ -8,6 +8,7 @@ const get_sublets_from_dynamodb = require('../DynamoDB/dynamodb_api').get_sublet
 const getLatestSubletFromDb = require('../DynamoDB/dynamodb_api').getLatestSubletFromDb
 const get_sublet_by_id_from_dynamodb = require('../DynamoDB/dynamodb_api').get_sublet_by_id_from_dynamodb
 const get_sublets_by_place_id = require('../DynamoDB/dynamodb_api').get_sublets_by_place_id
+const post_sublet_to_dynamodb = require('../DynamoDB/dynamodb_api').post_sublet_to_dynamodb
 
 // to run a query we just pass it to the pool
 // after we're done nothing has to be taken care of
@@ -68,6 +69,20 @@ exports.get_matching_sublets_by_address = (req, res, next) => {
   // })
   get_sublets_by_address(req.body.address).then((data) => {
     res.json(data)
+  }).catch((err) => {
+    res.status(err).send(err)
+  })
+}
+
+exports.post_sublet = (req, res, next) => {
+  console.log('post_sublet')
+  console.log(req.body)
+  post_sublet_to_dynamodb(req.body.sublet).then((data) => {
+    console.log('SUCCESSFULLY INSERTED SUBLET')
+    console.log(data)
+    res.json({
+      message: 'success'
+    })
   }).catch((err) => {
     res.status(err).send(err)
   })
