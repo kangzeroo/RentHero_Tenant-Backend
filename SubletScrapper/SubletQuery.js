@@ -9,6 +9,8 @@ const getLatestSubletFromDb = require('../DynamoDB/dynamodb_api').getLatestSuble
 const get_sublet_by_id_from_dynamodb = require('../DynamoDB/dynamodb_api').get_sublet_by_id_from_dynamodb
 const get_sublets_by_place_id = require('../DynamoDB/dynamodb_api').get_sublets_by_place_id
 const post_sublet_to_dynamodb = require('../DynamoDB/dynamodb_api').post_sublet_to_dynamodb
+const get_my_sublets_from_dynamodb = require('../DynamoDB/dynamodb_api').get_my_sublets_from_dynamodb
+const bump_sublet_in_dynamodb = require('../DynamoDB/dynamodb_api').bump_sublet_in_dynamodb
 
 // to run a query we just pass it to the pool
 // after we're done nothing has to be taken care of
@@ -38,6 +40,28 @@ exports.get_sublets = (req, res, next) => {
     res.json(data)
   }).catch((err) => {
     res.status(err).send(err)
+  })
+}
+
+exports.get_my_sublets = (req, res, next) => {
+  const fb_user_id = req.body.fb_user_id
+  get_my_sublets_from_dynamodb(fb_user_id).then((data) => {
+    res.json(data)
+  }).catch((err) => {
+    res.status(err).send(err)
+  })
+}
+
+exports.bump_sublet = (req, res, next) => {
+  const sublet = req.body.sublet
+  bump_sublet_in_dynamodb(sublet).then((data) => {
+    res.json({
+      message: 'successfully bumped'
+    })
+  }).catch((err) => {
+    res.status(500).send({
+      message: 'min 24 hours between bumps'
+    })
   })
 }
 

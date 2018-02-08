@@ -1,4 +1,5 @@
 const Rx = require('rxjs')
+const moment = require('moment')
 const AWS = require('aws-sdk')
 const aws_config = require('../credentials/aws_config')
 const dynaDoc = require("dynamodb-doc");
@@ -66,22 +67,6 @@ exports.get_sublets_from_dynamodb = function() {
     const timeSince = unixDateSince(30)
     console.log('------------------ get_sublets_from_dynamodb ------------------')
     console.log(timeSince)
-    // const params = {
-    //   TableName: "Rentburrow_Sublets_Operational",
-    //   KeyConditionExpression: "#PLACE_ID > :ANYTHING",
-    //   FilterExpression: "#DATE > :date",
-    //   ExpressionAttributeNames: {
-    //     "#PLACE_ID": "PLACE_ID",
-    //     "#DATE": "DATE"
-    //   },
-    //   ExpressionAttributeValues: {
-    //     ":ANYTHING": "0",
-    //     ":date": timeSince
-    //   }
-    // }
-    // console.log(timeSince)
-    // timeSince   = 1515495509300
-    // posted_date = 1518087173432
     const params = {
        "TableName": "Rentburrow_Sublets_Operational",
        "FilterExpression": "#POSTED_DATE > :timeSince",
@@ -93,6 +78,28 @@ exports.get_sublets_from_dynamodb = function() {
        },
        "Limit": 600,
     }
+    scanDynamoDB(params).then((data) => {
+      res(data)
+    }).catch((err) => {
+      rej(err)
+    })
+    // console.log(params)
+    // docClient.scan(params, function(err, data) {
+    //   if (err){
+    //     console.log(err, err.stack); // an error occurred
+    //     rej(err)
+    //   }else{
+    //     // console.log("====== GOT SUBLETS FROM LAST 100 DAYS =====")
+    //     console.log(data.Items.length, 'sublets retrieved');           // successful response
+    //     res(data.Items)
+    //   }
+    // })
+  })
+  return p
+}
+
+function scanDynamoDB(params) {
+  const p =  new Promise((res, rej) => {
     let Items = []
     const onNext = ({ obs, params }) => {
       console.log('OBSERVABLE NEXT')
@@ -134,17 +141,6 @@ exports.get_sublets_from_dynamodb = function() {
         res(Items)
       }
     })
-    // console.log(params)
-    // docClient.scan(params, function(err, data) {
-    //   if (err){
-    //     console.log(err, err.stack); // an error occurred
-    //     rej(err)
-    //   }else{
-    //     // console.log("====== GOT SUBLETS FROM LAST 100 DAYS =====")
-    //     console.log(data.Items.length, 'sublets retrieved');           // successful response
-    //     res(data.Items)
-    //   }
-    // })
   })
   return p
 }
@@ -152,30 +148,42 @@ exports.get_sublets_from_dynamodb = function() {
 exports.getLatestSubletFromDb = function(fb_group_id) {
   const p = new Promise((res, rej) => {
     console.log(fb_group_id)
+    const timeSince = unixDateSince(30)
     const params = {
        "TableName": "Rentburrow_Sublets_Historical",
-       "FilterExpression": "#FB_GROUP_ID = :fb_group_id",
+       "FilterExpression": "#FB_GROUP_ID = :fb_group_id and #POSTED_DATE > :timeSince",
        "ExpressionAttributeNames": {
-         "#FB_GROUP_ID": "FB_GROUP_ID"
+         "#FB_GROUP_ID": "FB_GROUP_ID",
+         "#POSTED_DATE": 'POSTED_DATE'
        },
        "ExpressionAttributeValues": {
-         ":fb_group_id": fb_group_id
+         ":fb_group_id": fb_group_id,
+         ":timeSince": timeSince
        },
       //  "Limit": 1,
     }
     // console.log(params)
-    docClient.scan(params, function(err, data) {
-      if (err){
-        console.log(err, err.stack); // an error occurred
-        rej(err)
-      }else{
-        console.log("====== GOT LATEST SUBLET =====")
-        // console.log(data);           // successful response
-        res(data.Items.sort((a, b) => {
-          return b.POSTED_DATE - a.POSTED_DATE
-        })[0])
-      }
+    scanDynamoDB(params).then((data) => {
+      console.log("====== GOT LATEST SUBLET =====")
+      // console.log(data);           // successful response
+      res(data.Items.sort((a, b) => {
+        return b.POSTED_DATE - a.POSTED_DATE
+      })[0])
+    }).catch((err) => {
+      rej(err)
     })
+    // docClient.scan(params, function(err, data) {
+    //   if (err){
+    //     console.log(err, err.stack); // an error occurred
+    //     rej(err)
+    //   }else{
+    //     console.log("====== GOT LATEST SUBLET =====")
+    //     // console.log(data);           // successful response
+    //     res(data.Items.sort((a, b) => {
+    //       return b.POSTED_DATE - a.POSTED_DATE
+    //     })[0])
+    //   }
+    // })
   })
   return p
 }
@@ -187,23 +195,32 @@ exports.get_sublet_by_id_from_dynamodb = function(fb_post_id) {
        "TableName": "Rentburrow_Sublets_Historical",
        "FilterExpression": "#POST_ID = :fb_post_id",
        "ExpressionAttributeNames": {
-         "#POST_ID": "POST_ID"
+         "#POST_ID": "POST_ID",
        },
        "ExpressionAttributeValues": {
          ":fb_post_id": fb_post_id
        }
     }
-    // console.log(params)
-    docClient.scan(params, function(err, data) {
-      if (err){
-        console.log(err, err.stack); // an error occurred
-        rej(err)
-      }else{
-        console.log("====== GOT LATEST SUBLET =====")
-        // console.log(data);           // successful response
-        res(data.Items)
-      }
+    scanDynamoDB(params).then((data) => {
+      console.log("====== GOT LATEST SUBLET =====")
+      // console.log(data);           // successful response
+      res(data.Items.sort((a, b) => {
+        return b.POSTED_DATE - a.POSTED_DATE
+      })[0])
+    }).catch((err) => {
+      rej(err)
     })
+    // console.log(params)
+    // docClient.scan(params, function(err, data) {
+    //   if (err){
+    //     console.log(err, err.stack); // an error occurred
+    //     rej(err)
+    //   }else{
+    //     console.log("====== GOT LATEST SUBLET =====")
+    //     // console.log(data);           // successful response
+    //     res(data.Items)
+    //   }
+    // })
   })
   return p
 }
@@ -211,27 +228,37 @@ exports.get_sublet_by_id_from_dynamodb = function(fb_post_id) {
 exports.get_sublets_by_place_id = function(place_id) {
   console.log('get_sublet_by_place_id')
   const p = new Promise((res, rej) => {
+    const timeSince = unixDateSince(30)
     const params = {
        "TableName": "Rentburrow_Sublets_Operational",
-       "FilterExpression": "#PLACE_ID = :place_id",
+       "FilterExpression": "#PLACE_ID = :place_id and #POSTED_DATE > :timeSince",
        "ExpressionAttributeNames": {
-         "#PLACE_ID": "PLACE_ID"
+         "#PLACE_ID": "PLACE_ID",
+         "#POSTED_DATE": 'POSTED_DATE'
        },
        "ExpressionAttributeValues": {
-         ":place_id": place_id
+         ":place_id": place_id,
+         ":timeSince": timeSince
        }
     }
-    // console.log(params)
-    docClient.scan(params, function(err, data) {
-      if (err){
-        console.log(err, err.stack); // an error occurred
-        rej(err)
-      }else{
-        console.log("====== GOT LATEST SUBLETS =====")
-        // console.log(data);           // successful response
-        res(data.Items)
-      }
+    scanDynamoDB(params).then((data) => {
+      console.log("====== GOT LATEST SUBLET =====")
+      // console.log(data);           // successful response
+      res(data)
+    }).catch((err) => {
+      rej(err)
     })
+    // console.log(params)
+    // docClient.scan(params, function(err, data) {
+    //   if (err){
+    //     console.log(err, err.stack); // an error occurred
+    //     rej(err)
+    //   }else{
+    //     console.log("====== GOT LATEST SUBLETS =====")
+    //     // console.log(data);           // successful response
+    //     res(data.Items)
+    //   }
+    // })
   })
   return p
 }
@@ -239,27 +266,37 @@ exports.get_sublets_by_place_id = function(place_id) {
 exports.get_sublets_by_address = function(address) {
   console.log('get_sublet_by_address')
   const p = new Promise((res, rej) => {
+    const timeSince = unixDateSince(30)
     const params = {
        "TableName": "Rentburrow_Sublets_Operational",
-       "FilterExpression": "#ADDRESS = :address",
+       "FilterExpression": "#ADDRESS = :address and #POSTED_DATE > :timeSince",
        "ExpressionAttributeNames": {
-         "#ADDRESS": "ADDRESS"
+         "#ADDRESS": "ADDRESS",
+         "#POSTED_DATE": 'POSTED_DATE'
        },
        "ExpressionAttributeValues": {
-         ":address": address
+         ":address": address,
+         ":timeSince": timeSince
        }
     }
-    // console.log(params)
-    docClient.scan(params, function(err, data) {
-      if (err){
-        console.log(err, err.stack); // an error occurred
-        rej(err)
-      }else{
-        console.log("====== GOT LATEST SUBLETS =====")
-        // console.log(data);           // successful response
-        res(data.Items)
-      }
+    scanDynamoDB(params).then((data) => {
+      console.log("====== GOT LATEST SUBLET =====")
+      // console.log(data);           // successful response
+      res(data)
+    }).catch((err) => {
+      rej(err)
     })
+    // console.log(params)
+    // docClient.scan(params, function(err, data) {
+    //   if (err){
+    //     console.log(err, err.stack); // an error occurred
+    //     rej(err)
+    //   }else{
+    //     console.log("====== GOT LATEST SUBLETS =====")
+    //     // console.log(data);           // successful response
+    //     res(data.Items)
+    //   }
+    // })
   })
   return p
 }
@@ -290,4 +327,58 @@ exports.post_sublet_to_dynamodb = function(sublet_item) {
     return p
   })
   return Promise.all(insertions)
+}
+
+exports.get_my_sublets_from_dynamodb = function(fb_user_id) {
+  console.log('FACEBOOK ID: ', fb_user_id)
+  const p = new Promise((res, rej) => {
+    const timeSince = unixDateSince(30)
+    const params = {
+       "TableName": "Rentburrow_Sublets_Operational",
+       "FilterExpression": "#FB_USER_ID = :fb_user_id and #POSTED_DATE > :timeSince",
+       "ExpressionAttributeNames": {
+         "#FB_USER_ID": "FB_USER_ID",
+         "#POSTED_DATE": 'POSTED_DATE'
+       },
+       "ExpressionAttributeValues": {
+         ":fb_user_id": fb_user_id,
+         ":timeSince": timeSince
+       }
+    }
+    scanDynamoDB(params).then((data) => {
+      console.log("====== GOT MY SUBLETS =====")
+      // console.log(data);           // successful response
+      res(data)
+    }).catch((err) => {
+      rej(err)
+    })
+  })
+  return p
+}
+
+exports.bump_sublet_in_dynamodb = function(sublet) {
+  console.log('bump_sublet_in_dynamodb')
+  const p = new Promise((res, rej) => {
+    if (sublet.POSTED_DATE + (1000 * 60 * 60 * 24) < moment().valueOf()) {
+      console.log('ITS HAPPENING!!')
+      sublet.POSTED_DATE = moment().valueOf()
+      const updatedSublet = {
+        'TableName': "Rentburrow_Sublets_Operational",
+        'Item': sublet,
+      }
+      docClient.putItem(updatedSublet, function(err, data) {
+        if (err){
+            console.log(JSON.stringify(err, null, 2));
+            rej()
+        }else{
+            console.log('HINT UPDATED!')
+            res('success')
+        }
+      })
+    } else {
+      console.log('NAHHH AINT HAPPENING')
+      rej()
+    }
+  })
+  return p
 }
