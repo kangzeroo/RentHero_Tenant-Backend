@@ -69,6 +69,8 @@ module.exports = function(app){
 	app.post('/get_sublets', [json_encoding, originCheck], SubletQuery.get_sublets)
 	app.post('/new_sublets', [json_encoding, originCheck], SubletQuery.new_sublets)
 	app.post('/post_sublet', [json_encoding, originCheck], SubletQuery.post_sublet)
+	app.post('/get_my_sublets', [json_encoding, originCheck], SubletQuery.get_my_sublets)
+	app.post('/bump_sublet', [json_encoding, originCheck], SubletQuery.bump_sublet)
 	app.post('/get_matching_sublets', [json_encoding, originCheck], SubletQuery.get_matching_sublets)
 	app.post('/get_matching_sublets_by_address', [json_encoding, originCheck], SubletQuery.get_matching_sublets_by_address)
 	app.post('/longlivetoken', [json_encoding, originCheck], Authentication.longlivetoken)
