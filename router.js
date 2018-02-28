@@ -83,6 +83,7 @@ module.exports = function(app){
 
 	// Landlord routes
 	app.post('/get_landlord_info', [json_encoding, originCheck], LandlordQuery.get_landlord_info)
+	app.post('/get_landlord_office_hours', [json_encoding, originCheck], LandlordQuery.get_landlord_office_hours)
 
 	// Favorites routes
 	app.post('/insert_building_favorite', [json_encoding, originCheck], FavoritesQuery.insert_building_favorite)

@@ -49,3 +49,27 @@ exports.get_landlord_info = (req, res, next) => {
         res.status(500).send('Failed to get landlord info')
     })
 }
+
+exports.get_landlord_office_hours = (req, res, next) => {
+  const info = req.body
+  const values = [info.corporation_id]
+
+  const get_office_hours = `SELECT * FROM corporation_details WHERE corporation_id = $1`
+
+  const return_rows = (rows) => {
+    res.json(rows[0])
+  }
+  query(get_office_hours, values)
+    .then((data) => {
+      return stringify_rows(data)
+    })
+    .then((data) => {
+      return json_rows(data)
+    })
+    .then((data) => {
+      return return_rows(data)
+    })
+    .catch((error) => {
+      res.status(500).send('Failed to get corporation details')
+    })
+}
