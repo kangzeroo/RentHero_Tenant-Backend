@@ -78,8 +78,8 @@ exports.get_sublets_from_dynamodb = function() {
        },
        "Limit": 600,
     }
-    scanDynamoDB(params).then((data) => {
-      res(data)
+    scanDynamoDB(params).then((Items) => {
+      res(Items)
     }).catch((err) => {
       rej(err)
     })
@@ -109,7 +109,7 @@ function scanDynamoDB(params) {
           console.log(err, err.stack); // an error occurred
           obs.error(err)
         }else{
-          console.log(data);           // successful response
+          // console.log(data);           // successful response
           Items = Items.concat(data.Items)
           if (data.LastEvaluatedKey) {
             params.ExclusiveStartKey = data.LastEvaluatedKey
@@ -137,7 +137,6 @@ function scanDynamoDB(params) {
       },
       complete: (y) => {
         console.log('OBSERVABLE COMPLETE')
-        console.log(Items.length)
         res(Items)
       }
     })
@@ -150,7 +149,7 @@ exports.getLatestSubletFromDb = function(fb_group_id) {
     console.log(fb_group_id)
     const timeSince = unixDateSince(30)
     const params = {
-       "TableName": "Rentburrow_Sublets_Historical",
+       "TableName": "Rentburrow_Sublets_Operational",
        "FilterExpression": "#FB_GROUP_ID = :fb_group_id and #POSTED_DATE > :timeSince",
        "ExpressionAttributeNames": {
          "#FB_GROUP_ID": "FB_GROUP_ID",
@@ -163,10 +162,10 @@ exports.getLatestSubletFromDb = function(fb_group_id) {
       //  "Limit": 1,
     }
     // console.log(params)
-    scanDynamoDB(params).then((data) => {
-      console.log("====== GOT LATEST SUBLET =====")
-      // console.log(data);           // successful response
-      res(data.Items.sort((a, b) => {
+    scanDynamoDB(params).then((Items) => {
+      console.log("====== GOT LATEST SUBLET BY GROUP =====")
+      console.log("LENGTH: ", Items.length);           // successful response
+      res(Items.sort((a, b) => {
         return b.POSTED_DATE - a.POSTED_DATE
       })[0])
     }).catch((err) => {
@@ -201,10 +200,10 @@ exports.get_sublet_by_id_from_dynamodb = function(fb_post_id) {
          ":fb_post_id": fb_post_id
        }
     }
-    scanDynamoDB(params).then((data) => {
-      console.log("====== GOT LATEST SUBLET =====")
+    scanDynamoDB(params).then((Items) => {
+      console.log("====== GOT LATEST SUBLET BY DYNAMODB ID =====")
       // console.log(data);           // successful response
-      res(data.Items.sort((a, b) => {
+      res(Items.sort((a, b) => {
         return b.POSTED_DATE - a.POSTED_DATE
       })[0])
     }).catch((err) => {
@@ -241,10 +240,10 @@ exports.get_sublets_by_place_id = function(place_id) {
          ":timeSince": timeSince
        }
     }
-    scanDynamoDB(params).then((data) => {
-      console.log("====== GOT LATEST SUBLET =====")
+    scanDynamoDB(params).then((Items) => {
+      console.log("====== GOT LATEST SUBLET BY PLACE_ID =====")
       // console.log(data);           // successful response
-      res(data)
+      res(Items)
     }).catch((err) => {
       rej(err)
     })
@@ -279,10 +278,10 @@ exports.get_sublets_by_address = function(address) {
          ":timeSince": timeSince
        }
     }
-    scanDynamoDB(params).then((data) => {
-      console.log("====== GOT LATEST SUBLET =====")
+    scanDynamoDB(params).then((Items) => {
+      console.log("====== GOT LATEST SUBLET BY ADDRESS =====")
       // console.log(data);           // successful response
-      res(data)
+      res(Items)
     }).catch((err) => {
       rej(err)
     })
@@ -345,10 +344,10 @@ exports.get_my_sublets_from_dynamodb = function(fb_user_id) {
          ":timeSince": timeSince
        }
     }
-    scanDynamoDB(params).then((data) => {
+    scanDynamoDB(params).then((Items) => {
       console.log("====== GOT MY SUBLETS =====")
       // console.log(data);           // successful response
-      res(data)
+      res(Items)
     }).catch((err) => {
       rej(err)
     })

@@ -324,7 +324,7 @@ exports.get_all_active_buildings_mobile_filtered = (req, res, next) => {
   }
 
   const return_rows = (rows) => {
-    console.log(rows)
+    // console.log(rows)
     res.json(rows)
   }
   query(get_building, values)
