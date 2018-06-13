@@ -27,9 +27,7 @@ exports.get_all_active_buildings = (req, res, next) => {
                              b.building_address, b.gps_x, b.gps_y,
                              c.thumbnail, c.cover_photo, d.imgs, e.min_price, e.max_price,
                              f.min_rooms, f.max_rooms,
-                             h.ensuite_bath, i.utils_incl, j.label,
-                             k.name as corp_name,
-                             k.email AS corp_email, k.phone as corp_phone
+                             h.ensuite_bath, i.utils_incl, j.label
                       FROM building a
                       INNER JOIN
                         (SELECT address_id, gps_x, gps_y,
@@ -84,8 +82,6 @@ exports.get_all_active_buildings = (req, res, next) => {
                         ON a.building_id = i.building_id
                         INNER JOIN (SELECT building_id, label FROM building_details WHERE active=true) j
                         ON a.building_id = j.building_id
-                        INNER JOIN corporation k
-                        ON a.corporation_id = k.corporation_id
                       `
 
   const return_rows = (rows) => {
